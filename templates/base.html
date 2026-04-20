@@ -75,31 +75,39 @@
   @media (max-width: 768px) {
     .nav-inner { padding: 0 1rem; height: 60px; }
     .nav-logo { font-size: 1.5rem; }
-    .nav-links { display: none; }
-    .nav-user { display: none; }
-    .btn-logout { display: inline-flex; font-size: 0.75rem; padding: 0.3rem 0.6rem; }
-    .btn-outline, .btn-primary { padding: 0.4rem 0.8rem !important; font-size: 0.75rem !important; }
-    .nav-cart { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
-    .cart-text { display: none; }
+    .nav-links, .nav-actions-desktop { display: none !important; }
+    .mobile-only-cart { display: block; }
+    .menu-toggle { display: block; font-size: 1.4rem; cursor: pointer; color: var(--ink); }
+    
+    .mobile-nav {
+      display: block !important; position: fixed; top: 0; left: 0; bottom: 0; 
+      width: 280px; background: var(--white); z-index: 1001; padding: 2rem;
+      transform: translateX(-100%); transition: transform 0.3s ease;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+    }
+    .mobile-nav.active { transform: translateX(0); }
+    .mobile-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 1000; display: none;
+    }
+    .mobile-overlay.active { display: block; }
+    
     main { padding: 1rem; }
     .footer-inner { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1rem; }
   }
   
-  /* Mobile Menu Toggle */
-  .mobile-nav { display: none; background: var(--white); border-top: 1px solid var(--border); padding: 1rem; border-bottom: 1px solid var(--border); }
-  @media (max-width: 768px) {
-    .mobile-nav.active { display: block; }
-    .menu-toggle { display: block; font-size: 1.4rem; cursor: pointer; color: var(--ink); margin-right: 0.5rem; }
-  }
+  .mobile-only-cart { display: none; }
+  .mobile-overlay { display: none; }
   .menu-toggle { display: none; }
+  .nav-actions-desktop { display: flex; align-items: center; gap: 1rem; }
 </style>
 {% block extra_head %}{% endblock %}
 </head>
 <body>
 <nav>
   <div class="nav-inner">
-    <div style="display:flex;align-items:center;">
-      <div class="menu-toggle" onclick="document.querySelector('.mobile-nav').classList.toggle('active')">☰</div>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <div class="menu-toggle" onclick="document.querySelector('.mobile-nav').classList.toggle('active'); document.querySelector('.mobile-overlay').classList.toggle('active');">☰</div>
       <a href="{% url 'shop_home' %}" class="nav-logo">A&A Bouquet<span>.</span></a>
     </div>
     
@@ -111,7 +119,7 @@
       {% endif %}
     </div>
 
-    <div style="display:flex;align-items:center;gap:1rem;">
+    <div class="nav-actions-desktop">
       {% if user.is_authenticated %}
         <a href="{% url 'profile' %}" class="nav-user">
           <div style="width:28px;height:28px;background:var(--rose-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--rose-dark);font-weight:bold;">{{ user.username|first|upper }}</div>
@@ -126,44 +134,59 @@
         {% if user.is_staff %}<a href="{% url 'admin_dashboard' %}" class="btn-outline" style="padding:0.4rem 1rem;font-size:0.8rem; border-color:var(--green); color:var(--green);">⚙️ Admin Panel</a>{% endif %}
         <a href="{% url 'logout' %}" class="btn-logout">Keluar</a>
       {% else %}
+        <a href="{% url 'cart' %}" class="nav-cart" style="margin-right:0.5rem;">🛒</a>
         <a href="{% url 'login' %}" class="btn-outline" style="padding:0.5rem 1.2rem;">Masuk</a>
         <a href="{% url 'register' %}" class="btn-primary" style="padding:0.5rem 1.2rem;">Daftar</a>
       {% endif %}
     </div>
+    
+    <!-- Mobile Only Cart Icon -->
+    <div class="mobile-only-cart">
+      <a href="{% url 'cart' %}" class="nav-cart" style="padding:0.5rem;">
+        🛒
+        {% with total=request.session.cart|length %}
+          {% if total %}<span class="cart-badge" style="top:-5px; right:-5px;">{{ total }}</span>{% endif %}
+        {% endwith %}
+      </a>
+    </div>
   </div>
   
+  <!-- Mobile Overlay -->
+  <div class="mobile-overlay" onclick="document.querySelector('.mobile-nav').classList.remove('active'); document.querySelector('.mobile-overlay').classList.remove('active');"></div>
+
   <!-- Mobile Menu Content -->
   <div class="mobile-nav">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+      <div class="nav-logo" style="margin:0; font-size:1.6rem;">A&A Bouquet<span>.</span></div>
+      <div style="font-size:1.5rem; cursor:pointer; color:var(--ink);" onclick="document.querySelector('.mobile-nav').classList.remove('active'); document.querySelector('.mobile-overlay').classList.remove('active');">✕</div>
+    </div>
+    
     <div style="display:flex; flex-direction:column; gap:1.2rem;">
-      <a href="{% url 'shop_home' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">🏠 Beranda</a>
-      <a href="{% url 'shop_home' %}?category=" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">💐 Koleksi Bunga</a>
+      <a href="{% url 'shop_home' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1.1rem;color:var(--ink-mid);font-weight:500;">🏠 Beranda</a>
+      <a href="{% url 'shop_home' %}?category=" style="display:flex;align-items:center;gap:0.8rem;font-size:1.1rem;color:var(--ink-mid);font-weight:500;">💐 Koleksi Bunga</a>
       
       {% if user.is_authenticated %}
-        <a href="{% url 'profile' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">👤 Profil Saya</a>
-        <a href="{% url 'my_orders' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">📦 Pesanan Saya</a>
-        <a href="{% url 'cart' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">
-          🛒 Keranjang Belanja
-          {% with total=request.session.cart|length %}
-            {% if total %}<span class="cart-badge" style="background:var(--rose); color:white;">{{ total }}</span>{% endif %}
-          {% endwith %}
-        </a>
-        
         <div style="height:1px; background:var(--border); margin:0.5rem 0;"></div>
+        <a href="{% url 'profile' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1.1rem;color:var(--ink-mid);font-weight:500;">👤 Profil Saya</a>
+        <a href="{% url 'my_orders' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1.1rem;color:var(--ink-mid);font-weight:500;">📦 Pesanan Saya</a>
+        <a href="{% url 'cart' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1.1rem;color:var(--ink-mid);font-weight:500;">🛒 Keranjang Belanja</a>
+        
+        <div style="height:1px; background:var(--border); margin:1rem 0;"></div>
         
         <div style="display:flex;align-items:center;gap:0.8rem;">
-          <div style="width:32px;height:32px;background:var(--rose-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--rose-dark);font-weight:bold;">{{ user.username|first|upper }}</div>
-          <div style="font-size:0.9rem; color:var(--ink-mid);">Halo, <strong>{{ user.first_name|default:user.username }}</strong></div>
+          <div style="width:36px;height:36px;background:var(--rose-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;color:var(--rose-dark);font-weight:bold;">{{ user.username|first|upper }}</div>
+          <div style="font-size:1rem; color:var(--ink-mid);">Halo, <strong>{{ user.first_name|default:user.username }}</strong></div>
         </div>
 
         {% if user.is_staff %}
-          <a href="{% url 'admin_dashboard' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:0.9rem;color:var(--green);font-weight:600;background:var(--green-light);padding:0.8rem;border-radius:12px;">⚙️ Masuk Admin Panel</a>
+          <a href="{% url 'admin_dashboard' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--green);font-weight:600;background:var(--green-light);padding:1rem;border-radius:12px;margin-top:1rem;">⚙️ Admin Panel</a>
         {% endif %}
         
-        <a href="{% url 'logout' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:0.9rem;color:var(--rose);font-weight:600;padding:0.5rem 0;">🚪 Keluar dari Akun</a>
+        <a href="{% url 'logout' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--rose);font-weight:600;margin-top:1rem;">🚪 Keluar Akun</a>
       {% else %}
-        <div style="height:1px; background:var(--border); margin:0.5rem 0;"></div>
-        <a href="{% url 'login' %}" class="btn-outline" style="justify-content:center;">Masuk</a>
-        <a href="{% url 'register' %}" class="btn-primary" style="justify-content:center;">Daftar Akun Baru</a>
+        <div style="height:1px; background:var(--border); margin:1rem 0;"></div>
+        <a href="{% url 'login' %}" class="btn-outline" style="justify-content:center; width:100%;">Masuk</a>
+        <a href="{% url 'register' %}" class="btn-primary" style="justify-content:center; width:100%;">Daftar Baru</a>
       {% endif %}
     </div>
   </div>
