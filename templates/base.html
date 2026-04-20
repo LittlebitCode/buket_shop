@@ -22,11 +22,12 @@
 
   /* NAV */
   nav { background: var(--white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-  .nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 80px; }
-  .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 600; color: var(--rose); letter-spacing: 0.02em; }
+  .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 80px; }
+  .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 600; color: var(--rose); letter-spacing: 0.02em; white-space: nowrap; flex: 1; }
   .nav-logo span { color: var(--ink); font-weight: 300; }
   
-  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links { display: flex; align-items: center; gap: 2rem; flex: 2; justify-content: center; }
+  .nav-actions { display: flex; align-items: center; gap: 1.2rem; flex: 1; justify-content: flex-end; }
   .nav-links a { font-size: 0.85rem; font-weight: 400; color: var(--ink-mid); letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.2s; }
   .nav-links a:hover { color: var(--rose); }
 
