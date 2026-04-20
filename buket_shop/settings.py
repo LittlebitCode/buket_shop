@@ -7,9 +7,9 @@ SECRET_KEY = 'django-insecure-buket-shop-change-this-in-production-2024'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', 'buketshop-production.up.railway.app']
+ALLOWED_HOSTS = ['*', 'buketshop-production.up.railway.app', '.pythonanywhere.com']
 
-CSRF_TRUSTED_ORIGINS = ['https://buketshop-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://buketshop-production.up.railway.app', 'https://*.pythonanywhere.com']
 
 
 INSTALLED_APPS = [
@@ -106,6 +106,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'adityaahza0223@gmail.com'
-EMAIL_HOST_PASSWORD = 'isi-dengan-sandi-aplikasi-baru-disini' 
+EMAIL_HOST_PASSWORD = 'uiawmlqtipbdfjhm' 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
