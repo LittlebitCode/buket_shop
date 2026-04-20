@@ -8,7 +8,6 @@
   .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin-bottom: 5rem; }
   .product-image-wrap { background: linear-gradient(135deg, #f5ede8 0%, #faf7f4 100%); border-radius: 24px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 10rem; position: sticky; top: 88px; overflow: hidden; }
   .product-image-wrap img { width: 100%; height: 100%; object-fit: cover; }
-  .detail-content { }
   .detail-cat { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--rose); margin-bottom: 0.8rem; }
   .detail-name { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; color: var(--ink); line-height: 1.1; margin-bottom: 0.5rem; }
   .detail-price { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 600; color: var(--rose); margin: 1.5rem 0; }
@@ -57,11 +56,17 @@
 <div class="detail-grid">
   <div class="product-image-wrap">
     {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">{% else %}💐{% endif %}
+    {% if product.is_featured %}
+      <div class="featured-badge" style="position:absolute; top:0; left:0; background:linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%); color:var(--white); padding:0.6rem 1.4rem 0.6rem 1rem; font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; border-radius:0 0 24px 0; box-shadow:4px 4px 15px rgba(0,0,0,0.1); z-index:10; display:flex; align-items:center; gap:0.5rem; overflow:hidden;">
+        <span>✨</span> Produk Unggulan
+        <div class="shimmer-effect" style="position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.3) 50%, transparent 55%); animation:shimmer 3s infinite;"></div>
+      </div>
+      <style>@keyframes shimmer { 0% { transform: translateX(-100%) translateY(-100%); } 100% { transform: translateX(100%) translateY(100%); } }</style>
+    {% endif %}
   </div>
   <div class="detail-content">
     {% if product.category %}<div class="detail-cat">{{ product.category.name }}</div>{% endif %}
     <h1 class="detail-name">{{ product.name }}</h1>
-    {% if product.is_featured %}<span class="tag tag-rose" style="font-size:0.75rem;">⭐ Produk Unggulan</span>{% endif %}
     <div class="detail-price">{{ product.formatted_price }}</div>
 
     <div class="stock-badge {% if product.stock > 5 %}stock-ok{% else %}stock-low{% endif %}">

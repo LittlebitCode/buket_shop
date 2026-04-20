@@ -111,6 +111,28 @@
   .empty-state .icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.4; }
   .empty-state h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--ink-mid); margin-bottom: 0.5rem; }
 
+  /* NEW FEATURED BADGE */
+  .featured-badge {
+    position: absolute; top: 0; left: 0;
+    background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+    color: var(--white); padding: 0.5rem 1.2rem 0.5rem 0.8rem;
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.1em; border-radius: 0 0 20px 0;
+    box-shadow: 4px 4px 15px rgba(201,112,90,0.25);
+    display: flex; align-items: center; gap: 0.4rem; z-index: 10;
+    overflow: hidden;
+  }
+  .featured-badge::after {
+    content: ''; position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.3) 50%, transparent 55%);
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%) translateY(-100%); }
+    100% { transform: translateX(100%) translateY(100%); }
+  }
+
   @media (max-width: 768px) {
     .hero { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 0; text-align: center; min-height: auto; }
     .hero-label { justify-content: center; }
@@ -253,8 +275,14 @@
           {% else %}
             💐
           {% endif %}
-          {% if product.is_featured %}<span class="product-badge tag tag-rose">Unggulan</span>{% endif %}
-          {% if product.stock < 5 and product.stock > 0 %}<span class="product-badge tag tag-rose" style="top:auto;bottom:0.8rem;">Sisa {{ product.stock }}</span>{% endif %}
+          {% if product.is_featured %}
+            <div class="featured-badge">
+              <span>✨</span> Unggulan
+            </div>
+          {% endif %}
+          {% if product.stock < 5 and product.stock > 0 %}
+            <span class="tag tag-rose" style="position:absolute; bottom:0.8rem; left:0.8rem; z-index:5;">Sisa {{ product.stock }}</span>
+          {% endif %}
         </div>
       </a>
       <div class="product-body">

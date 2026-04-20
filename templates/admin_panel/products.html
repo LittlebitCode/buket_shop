@@ -87,7 +87,7 @@
         <div style="position:absolute;top:0.6rem;right:0.6rem;background:#fce4ec;color:#c62828;font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:4px;font-weight:500;">Nonaktif</div>
       {% endif %}
       {% if product.is_featured %}
-        <div style="position:absolute;top:0.6rem;left:0.6rem;" class="featured-badge">⭐ Unggulan</div>
+        <div style="position:absolute;top:0;left:0;background:var(--rose);color:white;padding:0.2rem 0.6rem;font-size:0.65rem;font-weight:600;border-radius:0 0 10px 0;box-shadow:2px 2px 5px rgba(0,0,0,0.1);">✨ Unggulan</div>
       {% endif %}
     </div>
     <div class="prod-body">
@@ -99,9 +99,11 @@
       </div>
     </div>
     <div class="prod-footer">
-      <span style="font-size:0.75rem;color:{% if product.is_available %}var(--green){% else %}#e65100{% endif %};">
-        {% if product.is_available %}● Aktif{% else %}○ Nonaktif{% endif %}
-      </span>
+      {% if product.is_available %}
+        <span style="font-size:0.75rem;color:var(--green);">● Aktif</span>
+      {% else %}
+        <span style="font-size:0.75rem;color:#e65100;">○ Nonaktif</span>
+      {% endif %}
       <form method="post" action="{% url 'admin_product_toggle' product.pk %}">
         {% csrf_token %}
         <button type="submit" class="toggle-btn {% if product.is_available %}on{% else %}off{% endif %}">
