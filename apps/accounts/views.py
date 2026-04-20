@@ -7,18 +7,22 @@ from django.core.mail import send_mail
 from .models import EmailVerification
 
 
+import threading
+
 def send_verification_code(user):
-    try:
-        verification, created = EmailVerification.objects.get_or_create(user=user)
-        code = verification.generate_code()
-        subject = 'Kode Verifikasi A&A Bouquet'
-        message = f'Kode verifikasi Anda adalah: {code}. Jangan berikan kode ini kepada siapapun.'
-        send_mail(subject, message, None, [user.email], fail_silently=False)
-        print(f"DEBUG: Email berhasil dikirim ke {user.email}")
-    except Exception as e:
-        print(f"DEBUG ERROR EMAIL: {str(e)}")
-        # Jika gagal, kita tetap biarkan proses berlanjut agar web tidak 500 Error
-        pass
+    def send_email_task():
+        try:
+            verification, created = EmailVerification.objects.get_or_create(user=user)
+            code = verification.generate_code()
+            subject = 'Kode Verifikasi A&A Bouquet'
+            message = f'Kode verifikasi Anda adalah: {code}. Jangan berikan kode ini kepada siapapun.'
+            send_mail(subject, message, None, [user.email], fail_silently=False)
+            print(f"DEBUG: Email berhasil dikirim ke {user.email}")
+        except Exception as e:
+            print(f"DEBUG ERROR EMAIL: {str(e)}")
+    
+    # Menjalankan pengiriman di latar belakang agar tidak membuat website macet
+    threading.Thread(target=send_email_task).start()
 
 
 def login_view(request):
