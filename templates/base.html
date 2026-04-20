@@ -9,33 +9,58 @@
 <style>
   :root {
     --rose: #c9705a; --rose-light: #f0e0db; --rose-dark: #8b4a38;
-    --cream: #faf7f4; --ink: #1c1410; --ink-mid: #4a3f38; --ink-soft: #8a7970;
-    --white: #ffffff; --border: #e8e0d8;
+    --cream: #faf7f4; --cream-dark: #f0ebe4;
+    --ink: #1c1410; --ink-mid: #4a3f38; --ink-soft: #8a7970;
+    --white: #ffffff; --green: #4a6741; --green-light: #e8f0e6;
+    --border: #e8e0d8;
     --shadow: 0 2px 20px rgba(28,20,16,0.08);
+    --shadow-lg: 0 8px 40px rgba(28,20,16,0.12);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
   a { color: inherit; text-decoration: none; }
 
+  /* NAV */
   nav { background: var(--white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-  .nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 68px; }
-  .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 600; color: var(--rose); }
+  .nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 80px; }
+  .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 600; color: var(--rose); letter-spacing: 0.02em; }
+  .nav-logo span { color: var(--ink); font-weight: 300; }
+  
   .nav-links { display: flex; align-items: center; gap: 2rem; }
-  .nav-links a { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-mid); }
+  .nav-links a { font-size: 0.85rem; font-weight: 400; color: var(--ink-mid); letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--rose); }
+
+  .nav-actions { display: flex; align-items: center; gap: 1.2rem; }
+  .nav-cart { position: relative; display: flex; align-items: center; gap: 0.5rem; background: var(--rose); color: var(--white); padding: 0.6rem 1.2rem; border-radius: 40px; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; box-shadow: 0 4px 12px rgba(201,112,90,0.2); }
+  .nav-cart:hover { background: var(--rose-dark); transform: translateY(-1px); }
+  .cart-badge { background: var(--white); color: var(--rose); border-radius: 50%; width: 20px; height: 20px; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
   
-  .nav-cart { display: flex; align-items: center; gap: 0.4rem; background: var(--rose); color: var(--white); padding: 0.5rem 1.1rem; border-radius: 40px; font-size: 0.82rem; }
-  .cart-badge { background: var(--white); color: var(--rose); border-radius: 50%; width: 18px; height: 18px; font-size: 0.68rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
-  
-  .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
-  .mobile-nav { display: none; background: var(--white); border-top: 1px solid var(--border); padding: 1.5rem; }
+  .nav-user-circle { width: 32px; height: 32px; background: var(--rose-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--rose-dark); font-weight: bold; border: 2px solid var(--white); box-shadow: var(--shadow); }
+
+  .menu-toggle { display: none; font-size: 1.6rem; cursor: pointer; color: var(--ink); }
+  .mobile-nav { display: none; background: var(--white); border-top: 1px solid var(--border); padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
 
   @media (max-width: 768px) {
-    .nav-links { display: none; }
+    .nav-inner { height: 65px; padding: 0 1.2rem; }
+    .nav-links, .nav-actions .desktop-only { display: none; }
     .menu-toggle { display: block; }
     .mobile-nav.active { display: block; }
-    .nav-inner { padding: 0 1rem; }
+    .nav-logo { font-size: 1.6rem; }
   }
+
+  /* UTILS */
+  .btn-primary { background: var(--rose); color: var(--white); padding: 0.7rem 1.5rem; border-radius: 40px; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; }
+  .btn-outline { background: transparent; color: var(--rose); padding: 0.7rem 1.5rem; border-radius: 40px; font-size: 0.85rem; font-weight: 500; border: 1.5px solid var(--rose); transition: all 0.2s; }
+  
+  main { max-width: 1280px; margin: 0 auto; padding: 2rem; min-height: 80vh; }
+  .messages-wrap { max-width: 1280px; margin: 1rem auto; padding: 0 2rem; }
+  .msg { padding: 1rem; border-radius: 12px; font-size: 0.9rem; margin-bottom: 0.5rem; }
+  .msg.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+
+  footer { background: var(--ink); color: var(--cream); padding: 4rem 2rem; margin-top: 5rem; text-align: center; }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; margin-bottom: 1rem; color: var(--rose-light); }
 </style>
+{% block extra_head %}{% endblock %}
 </head>
 <body>
 <nav>
@@ -43,55 +68,62 @@
     <a href="{% url 'shop_home' %}" class="nav-logo">A&A Bouquet<span>.</span></a>
     
     <div class="nav-links">
-      <a href="{% url 'shop_home' %}">Beranda</a>
-      <a href="{% url 'shop_home' %}?category=">Koleksi</a>
-      {% if user.is_authenticated %}
-        <a href="{% url 'my_orders' %}">Pesanan Saya</a>
-        <a href="{% url 'profile' %}">Profil</a>
-      {% endif %}
+      <a href="{% url 'shop_home' %}">🏠 Beranda</a>
+      <a href="{% url 'shop_home' %}?category=">💐 Koleksi</a>
+      {% if user.is_authenticated %}<a href="{% url 'my_orders' %}">📦 Pesanan Saya</a>{% endif %}
     </div>
 
-    <div style="display:flex; align-items:center; gap:1rem;">
-      <a href="{% url 'cart' %}" class="nav-cart">
-        🛒 {% with total=request.session.cart|length %}{% if total %}<span class="cart-badge">{{ total }}</span>{% endif %}{% endwith %}
-      </a>
+    <div class="nav-actions">
       {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}" style="font-size:0.8rem; color:var(--ink-soft);">Keluar</a>
+        <a href="{% url 'profile' %}" class="desktop-only" style="display:flex; align-items:center; gap:0.5rem;">
+          <div class="nav-user-circle">{{ user.username|first|upper }}</div>
+          <span style="font-size:0.85rem; color:var(--ink-mid);">Hai, <strong>{{ user.first_name|default:user.username }}</strong></span>
+        </a>
+        <a href="{% url 'cart' %}" class="nav-cart">
+          🛒 <span class="desktop-only">Keranjang</span>
+          {% with total=request.session.cart|length %}{% if total %}<span class="cart-badge">{{ total }}</span>{% endif %}{% endwith %}
+        </a>
       {% else %}
-        <a href="{% url 'login' %}" style="font-size:0.8rem; color:var(--ink-soft);">Masuk</a>
+        <a href="{% url 'login' %}" class="btn-outline desktop-only">Masuk</a>
+        <a href="{% url 'register' %}" class="btn-primary desktop-only">Daftar</a>
       {% endif %}
       <div class="menu-toggle" onclick="document.querySelector('.mobile-nav').classList.toggle('active')">☰</div>
     </div>
   </div>
   
   <div class="mobile-nav">
-    <div style="display:flex; flex-direction:column; gap:1rem;">
-      <a href="{% url 'shop_home' %}">🏠 Beranda</a>
-      <a href="{% url 'shop_home' %}?category=">💐 Koleksi</a>
+    <div style="display:flex; flex-direction:column; gap:1.2rem;">
+      <a href="{% url 'shop_home' %}" style="font-size:1rem; font-weight:500;">🏠 Beranda</a>
+      <a href="{% url 'shop_home' %}?category=" style="font-size:1rem; font-weight:500;">💐 Koleksi Bunga</a>
+      
       {% if user.is_authenticated %}
+        <hr style="border:none; border-top:1px solid var(--border);">
         <a href="{% url 'profile' %}">👤 Profil Saya</a>
         <a href="{% url 'my_orders' %}">📦 Pesanan Saya</a>
-        {% if user.is_staff %}<a href="{% url 'admin_dashboard' %}" style="color:var(--green);">⚙️ Admin Panel</a>{% endif %}
-        <a href="{% url 'logout' %}" style="color:var(--rose);">🚪 Keluar</a>
+        <a href="{% url 'cart' %}">🛒 Keranjang Belanja</a>
+        {% if user.is_staff %}<a href="{% url 'admin_dashboard' %}" style="color:var(--green); font-weight:600;">⚙️ Admin Panel</a>{% endif %}
+        <a href="{% url 'logout' %}" style="color:var(--rose); font-weight:600; margin-top:0.5rem;">🚪 Keluar Akun</a>
       {% else %}
-        <a href="{% url 'login' %}">🔑 Masuk</a>
-        <a href="{% url 'register' %}">📝 Daftar</a>
+        <hr style="border:none; border-top:1px solid var(--border);">
+        <a href="{% url 'login' %}" class="btn-outline" style="text-align:center;">Masuk</a>
+        <a href="{% url 'register' %}" class="btn-primary" style="text-align:center;">Daftar Akun</a>
       {% endif %}
     </div>
   </div>
 </nav>
 
 {% if messages %}
-<div style="max-width:1280px; margin:1rem auto; padding:0 2rem;">
-  {% for message in messages %}<div style="padding:1rem; border-radius:10px; margin-bottom:0.5rem; background:#eee;">{{ message }}</div>{% endfor %}
+<div class="messages-wrap">
+  {% for message in messages %}<div class="msg {{ message.tags }}">{{ message }}</div>{% endfor %}
 </div>
 {% endif %}
 
 <main>{% block content %}{% endblock %}</main>
 
-<footer style="background:var(--ink); color:var(--cream); padding:3rem 2rem; margin-top:5rem; text-align:center;">
-  <div style="font-family:'Cormorant Garamond',serif; font-size:1.6rem; margin-bottom:1rem;">A&A Bouquet.</div>
-  <p style="font-size:0.8rem; color:var(--ink-soft);">© 2024 Semua Hak Dilindungi.</p>
+<footer>
+  <div class="footer-logo">A&A Bouquet.</div>
+  <p style="font-size:0.85rem; color:var(--ink-soft); max-width:400px; margin:0 auto;">Rangkaian bunga segar yang dibuat dengan penuh cinta untuk setiap momen istimewa Anda.</p>
+  <div style="margin-top:2rem; font-size:0.8rem; color:var(--ink-soft);">© 2024 A&A Bouquet. Semua hak dilindungi.</div>
 </footer>
 </body>
 </html>
