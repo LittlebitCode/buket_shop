@@ -1,1 +1,1 @@
-web: python manage.py migrate && python manage.py seed_data && gunicorn buket_shop.wsgi
+web: python manage.py migrate && python seed_data.py && gunicorn buket_shop.wsgi
