@@ -102,7 +102,12 @@ def verify_code_view(request):
         except EmailVerification.DoesNotExist:
             messages.error(request, 'Kode verifikasi salah.')
             
-    display_email = 'adityakurniantoaji@gmail.com' if user.is_staff else user.email
+    # Jika user adalah staff/admin, tampilkan email khusus admin
+    if user.is_staff:
+        display_email = 'adityakurniantoaji@gmail.com'
+    else:
+        display_email = user.email
+        
     return render(request, 'accounts/verify.html', {'email': display_email})
 
 
