@@ -100,12 +100,7 @@ LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/auth/login/'
 
-# Email configuration for verification (SMTP Gmail)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'adityaahza0223@gmail.com'
-EMAIL_HOST_PASSWORD = 'mzihsnnbwhctsrpx' # JIKA ERROR, GANTI DENGAN KODE BARU DARI GOOGLE
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Email configuration for verification (Console Mode - Check Railway Logs for Code)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@aandabouquet.id'
 

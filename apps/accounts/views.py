@@ -12,7 +12,7 @@ def send_verification_code(user):
     code = verification.generate_code()
     subject = 'Kode Verifikasi A&A Bouquet'
     message = f'Kode verifikasi Anda adalah: {code}. Jangan berikan kode ini kepada siapapun.'
-    send_mail(subject, message, None, [user.email])
+    send_mail(subject, message, None, [user.email], fail_silently=True)
 
 
 def login_view(request):
