@@ -113,10 +113,10 @@
 
     <div style="display:flex;align-items:center;gap:1rem;">
       {% if user.is_authenticated %}
-        <div class="nav-user">
+        <a href="{% url 'profile' %}" class="nav-user">
           <div style="width:28px;height:28px;background:var(--rose-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--rose-dark);font-weight:bold;">{{ user.username|first|upper }}</div>
           <span>Hai, <strong>{{ user.first_name|default:user.username }}</strong></span>
-        </div>
+        </a>
         <a href="{% url 'cart' %}" class="nav-cart">
           🛒 <span class="cart-text">Keranjang</span>
           {% with total=request.session.cart|length %}
@@ -139,6 +139,7 @@
       <a href="{% url 'shop_home' %}?category=" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">💐 Koleksi Bunga</a>
       
       {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">👤 Profil Saya</a>
         <a href="{% url 'my_orders' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">📦 Pesanan Saya</a>
         <a href="{% url 'cart' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">
           🛒 Keranjang Belanja

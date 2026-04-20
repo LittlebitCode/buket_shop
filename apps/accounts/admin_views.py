@@ -143,6 +143,7 @@ def admin_profile(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         first_name = request.POST.get('first_name')
+        email = request.POST.get('email')
         new_password = request.POST.get('new_password')
         
         # Validation for username
@@ -152,6 +153,7 @@ def admin_profile(request):
 
         user.username = username
         user.first_name = first_name
+        user.email = email
         
         if new_password:
             user.set_password(new_password)

@@ -93,7 +93,7 @@ def verify_code_view(request):
         try:
             verification = EmailVerification.objects.get(user=user, code=code)
             # Log the user in
-            login(request, user)
+            auth_login(request, user)
             del request.session['pending_user_id']
             messages.success(request, f'Verifikasi berhasil! Selamat datang, {user.first_name or user.username}.')
             if user.is_staff:
@@ -108,4 +108,29 @@ def verify_code_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+
+@login_required(login_url='login')
+def profile_view(request):
+    user = request.user
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        email = request.POST.get('email')
+        new_password = request.POST.get('new_password')
+        
+        user.first_name = first_name
+        user.email = email
+        
+        if new_password:
+            user.set_password(new_password)
+            user.save()
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, user)
+        else:
+            user.save()
+            
+        messages.success(request, 'Profil Anda berhasil diperbarui!')
+        return redirect('profile')
+        
+    return render(request, 'accounts/profile.html', {'user': user})
 

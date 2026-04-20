@@ -42,6 +42,12 @@
       <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="Contoh: Admin Utama">
     </div>
 
+    <div class="form-group">
+      <label>Alamat Email</label>
+      <input type="email" name="email" value="{{ user.email }}" required>
+      <p class="help-text">Email ini digunakan untuk menerima kode verifikasi login admin.</p>
+    </div>
+
     <hr style="border:none;border-top:1px solid var(--border);margin:2rem 0;">
     
     <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;margin-bottom:1.5rem;">Keamanan</h3>
