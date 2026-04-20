@@ -7,7 +7,10 @@ SECRET_KEY = 'django-insecure-buket-shop-change-this-in-production-2024'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'buketshop-production.up.railway.app']
+
+CSRF_TRUSTED_ORIGINS = ['https://buketshop-production.up.railway.app']
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
