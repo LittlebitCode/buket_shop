@@ -130,14 +130,35 @@
   
   <!-- Mobile Menu Content -->
   <div class="mobile-nav">
-    <div style="display:flex; flex-direction:column; gap:1rem;">
-      <a href="{% url 'shop_home' %}" style="font-size:0.95rem; color:var(--ink-mid); font-weight:500;">Beranda</a>
-      <a href="{% url 'shop_home' %}?category=" style="font-size:0.95rem; color:var(--ink-mid); font-weight:500;">Koleksi</a>
+    <div style="display:flex; flex-direction:column; gap:1.2rem;">
+      <a href="{% url 'shop_home' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">🏠 Beranda</a>
+      <a href="{% url 'shop_home' %}?category=" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">💐 Koleksi Bunga</a>
+      
       {% if user.is_authenticated %}
-        <a href="{% url 'my_orders' %}" style="font-size:0.95rem; color:var(--ink-mid); font-weight:500;">Pesanan Saya</a>
+        <a href="{% url 'my_orders' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">📦 Pesanan Saya</a>
+        <a href="{% url 'cart' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:1rem;color:var(--ink-mid);font-weight:500;">
+          🛒 Keranjang Belanja
+          {% with total=request.session.cart|length %}
+            {% if total %}<span class="cart-badge" style="background:var(--rose); color:white;">{{ total }}</span>{% endif %}
+          {% endwith %}
+        </a>
+        
         <div style="height:1px; background:var(--border); margin:0.5rem 0;"></div>
-        <div style="font-size:0.85rem; color:var(--ink-soft);">Login sebagai: <strong>{{ user.username }}</strong></div>
-        <a href="{% url 'logout' %}" style="font-size:0.85rem; color:var(--rose); font-weight:600;">Keluar dari Akun</a>
+        
+        <div style="display:flex;align-items:center;gap:0.8rem;">
+          <div style="width:32px;height:32px;background:var(--rose-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--rose-dark);font-weight:bold;">{{ user.username|first|upper }}</div>
+          <div style="font-size:0.9rem; color:var(--ink-mid);">Halo, <strong>{{ user.first_name|default:user.username }}</strong></div>
+        </div>
+
+        {% if user.is_staff %}
+          <a href="{% url 'admin_dashboard' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:0.9rem;color:var(--green);font-weight:600;background:var(--green-light);padding:0.8rem;border-radius:12px;">⚙️ Masuk Admin Panel</a>
+        {% endif %}
+        
+        <a href="{% url 'logout' %}" style="display:flex;align-items:center;gap:0.8rem;font-size:0.9rem;color:var(--rose);font-weight:600;padding:0.5rem 0;">🚪 Keluar dari Akun</a>
+      {% else %}
+        <div style="height:1px; background:var(--border); margin:0.5rem 0;"></div>
+        <a href="{% url 'login' %}" class="btn-outline" style="justify-content:center;">Masuk</a>
+        <a href="{% url 'register' %}" class="btn-primary" style="justify-content:center;">Daftar Akun Baru</a>
       {% endif %}
     </div>
   </div>
