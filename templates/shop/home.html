@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% block title %}A&A Bouquet — Toko Buket Terbaik{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* HERO */
+  .hero {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+    align-items: center; padding: 5rem 0 4rem; min-height: 560px;
+  }
+  .hero-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--rose); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+  .hero-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--rose); }
+  .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 5vw, 5rem); font-weight: 300; line-height: 1.05; color: var(--ink); margin-bottom: 1.5rem; }
+  .hero h1 em { font-style: italic; color: var(--rose); }
+  .hero p { font-size: 1rem; color: var(--ink-soft); line-height: 1.8; margin-bottom: 2.5rem; max-width: 440px; }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .hero-stats { display: flex; gap: 2.5rem; margin-top: 3rem; }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: var(--ink); line-height: 1; }
+  .stat-label { font-size: 0.78rem; color: var(--ink-soft); margin-top: 0.2rem; }
+
+  .hero-visual { position: relative; }
+  .hero-card-main {
+    background: var(--white); border-radius: 24px; overflow: hidden;
+    box-shadow: var(--shadow-lg); aspect-ratio: 3/4; max-height: 500px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #f0e0db 0%, #faf7f4 50%, #e8f0e6 100%);
+    position: relative;
+  }
+  .hero-flower-big { font-size: 8rem; line-height: 1; filter: drop-shadow(0 8px 24px rgba(201,112,90,0.3)); }
+  .hero-badge {
+    position: absolute; bottom: 1.5rem; left: 1.5rem; right: 1.5rem;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
+    border-radius: 14px; padding: 1rem 1.2rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .hb-left .hb-name { font-weight: 500; font-size: 0.9rem; color: var(--ink); }
+  .hb-left .hb-cat { font-size: 0.75rem; color: var(--ink-soft); margin-top: 2px; }
+  .hb-price { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; color: var(--rose); }
+  .hero-float {
+    position: absolute; top: -1rem; right: -1rem;
+    background: var(--white); border-radius: 14px; padding: 0.8rem 1rem;
+    box-shadow: var(--shadow); font-size: 0.82rem; color: var(--ink-mid);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  /* CATEGORIES */
+  .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2rem; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 400; color: var(--ink); }
+  .section-link { font-size: 0.83rem; color: var(--rose); }
+
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 4rem; }
+  .cat-card {
+    background: var(--white); border: 1.5px solid var(--border); border-radius: 16px;
+    padding: 1.5rem 1rem; text-align: center; transition: all 0.2s; cursor: pointer;
+    display: block;
+  }
+  .cat-card:hover, .cat-card.active { border-color: var(--rose); background: var(--rose-light); transform: translateY(-2px); }
+  .cat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .cat-name { font-size: 0.83rem; font-weight: 500; color: var(--ink-mid); }
+
+  /* SEARCH BAR */
+  .search-bar { position: relative; margin-bottom: 2rem; }
+  .search-bar input { width: 100%; padding: 1rem 1.2rem 1rem 3rem; border: 1.5px solid var(--border); border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; background: var(--white); outline: none; transition: border-color 0.2s; }
+  .search-bar input:focus { border-color: var(--rose); }
+  .search-bar .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: var(--ink-soft); }
+
+  /* PRODUCT GRID */
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+  .product-card {
+    background: var(--white); border-radius: 20px; overflow: hidden;
+    border: 1px solid var(--border); transition: all 0.25s; position: relative;
+  }
+  .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
+  .product-img {
+    aspect-ratio: 4/3; background: linear-gradient(135deg, #f5ede8 0%, #faf7f4 100%);
+    display: flex; align-items: center; justify-content: center; font-size: 5rem;
+    position: relative; overflow: hidden;
+  }
+  .product-badge { position: absolute; top: 0.8rem; left: 0.8rem; }
+  .product-body { padding: 1.2rem; }
+  .product-cat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 0.4rem; }
+  .product-name { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; color: var(--ink); margin-bottom: 0.4rem; line-height: 1.2; }
+  .product-desc { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.6; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2; overflow: hidden; }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--rose); }
+  .product-price small { font-size: 0.8rem; color: var(--ink-soft); font-family: 'DM Sans', sans-serif; font-weight: 300; }
+  .btn-add { width: 38px; height: 38px; background: var(--rose); color: var(--white); border: none; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .btn-add:hover { background: var(--rose-dark); transform: scale(1.1); }
+
+  /* FEATURED SECTION */
+  .section-featured { margin-bottom: 4rem; }
+  .featured-hero {
+    background: var(--ink); border-radius: 24px; padding: 3rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+    position: relative; overflow: hidden;
+  }
+  .featured-hero::before { content: ''; position: absolute; right: -60px; top: -60px; width: 300px; height: 300px; border-radius: 50%; background: rgba(201,112,90,0.15); }
+  .fh-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--rose-light); opacity: 0.7; margin-bottom: 1rem; }
+  .fh-title { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; color: var(--white); line-height: 1.15; margin-bottom: 1rem; }
+  .fh-title em { font-style: italic; color: #f0e0db; }
+  .fh-desc { font-size: 0.88rem; color: rgba(255,255,255,0.45); line-height: 1.8; margin-bottom: 1.5rem; }
+  .featured-products { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .fp-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 1rem; text-align: center; transition: all 0.2s; cursor: pointer; }
+  .fp-card:hover { background: rgba(255,255,255,0.1); border-color: rgba(201,112,90,0.4); }
+  .fp-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .fp-name { font-size: 0.8rem; color: rgba(255,255,255,0.7); line-height: 1.4; }
+  .fp-price { font-size: 0.88rem; font-weight: 500; color: #f0e0db; margin-top: 0.3rem; }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 5rem 2rem; color: var(--ink-soft); }
+  .empty-state .icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.4; }
+  .empty-state h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--ink-mid); margin-bottom: 0.5rem; }
+
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; } .hero-visual { display: none; }
+    .featured-hero { grid-template-columns: 1fr; } .featured-products { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-label">Koleksi Terbaru 2024</div>
+    <h1>Buket bunga<br>untuk <em>setiap</em><br>momen indah</h1>
+    <p>Dari mawar premium hingga bouquet custom — kami hadir untuk membuat momen spesialmu semakin berkesan.</p>
+    <div class="hero-actions">
+      <a href="#produk" class="btn-primary">🌸 Lihat Koleksi</a>
+      {% if not user.is_authenticated %}
+        <a href="{% url 'register' %}" class="btn-outline">Daftar Gratis</a>
+      {% else %}
+        <a href="{% url 'my_orders' %}" class="btn-outline">📦 Pesanan Saya</a>
+      {% endif %}
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num">500+</div><div class="stat-label">Produk Tersedia</div></div>
+      <div class="stat-item"><div class="stat-num">2k+</div><div class="stat-label">Pelanggan Puas</div></div>
+      <div class="stat-item"><div class="stat-num">4.9★</div><div class="stat-label">Rating Rata-rata</div></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-card-main">
+      <div class="hero-flower-big">💐</div>
+      <div class="hero-badge">
+        <div class="hb-left">
+          <div class="hb-name">Grand Bouquet Rose</div>
+          <div class="hb-cat">Koleksi Premium</div>
+        </div>
+        <div class="hb-price">Rp 250.000</div>
+      </div>
+    </div>
+    <div class="hero-float">✨ <span>Buket Terlaris Minggu Ini</span></div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+{% if featured %}
+<section class="section-featured">
+  <div class="featured-hero">
+    <div>
+      <div class="fh-label">Pilihan Unggulan</div>
+      <h2 class="fh-title">Koleksi <em>istimewa</em><br>untuk kamu</h2>
+      <p class="fh-desc">Buket-buket terpopuler yang dipilih oleh tim kurator kami khusus untuk momen terbaik.</p>
+      <a href="#produk" class="btn-primary" style="display:inline-flex;">Lihat Semua →</a>
+    </div>
+    <div class="featured-products">
+      {% for product in featured %}
+      <a href="{% url 'product_detail' product.slug %}" class="fp-card">
+        <div class="fp-icon">
+          {% if product.image %}<img src="{{ product.image.url }}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
+          {% else %}🌺{% endif %}
+        </div>
+        <div class="fp-name">{{ product.name }}</div>
+        <div class="fp-price">{{ product.formatted_price }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CATEGORIES -->
+<section>
+  <div class="section-header">
+    <h2 class="section-title">Kategori</h2>
+    <a href="{% url 'shop_home' %}" class="section-link">Lihat semua →</a>
+  </div>
+  <div class="cat-grid">
+    <a href="{% url 'shop_home' %}" class="cat-card {% if not selected_category %}active{% endif %}">
+      <div class="cat-icon">🌸</div>
+      <div class="cat-name">Semua</div>
+    </a>
+    {% for cat in categories %}
+    <a href="?category={{ cat.slug }}" class="cat-card {% if selected_category == cat.slug %}active{% endif %}">
+      <div class="cat-icon">🌺</div>
+      <div class="cat-name">{{ cat.name }}</div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="produk">
+  <div class="section-header">
+    <h2 class="section-title">{% if search %}Hasil: "{{ search }}"{% elif selected_category %}{{ selected_category|title }}{% else %}Semua Produk{% endif %}</h2>
+    <span style="font-size:0.85rem;color:var(--ink-soft);">{{ products|length }} produk</span>
+  </div>
+
+  <form method="get" action="{% url 'shop_home' %}">
+    {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" name="search" value="{{ search }}" placeholder="Cari buket, mawar, tulip…">
+    </div>
+  </form>
+
+  {% if products %}
+  <div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+      <a href="{% url 'product_detail' product.slug %}">
+        <div class="product-img">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" alt="{{ product.name }}">
+          {% else %}
+            💐
+          {% endif %}
+          {% if product.is_featured %}<span class="product-badge tag tag-rose">Unggulan</span>{% endif %}
+          {% if product.stock < 5 and product.stock > 0 %}<span class="product-badge tag tag-rose" style="top:auto;bottom:0.8rem;">Sisa {{ product.stock }}</span>{% endif %}
+        </div>
+      </a>
+      <div class="product-body">
+        <div class="product-cat">{{ product.category.name|default:'Buket' }}</div>
+        <a href="{% url 'product_detail' product.slug %}">
+          <div class="product-name">{{ product.name }}</div>
+        </a>
+        <div class="product-desc">{{ product.description }}</div>
+        <div class="product-footer">
+          <div class="product-price">{{ product.formatted_price }}</div>
+          {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_to_cart' product.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn-add" title="Tambah ke keranjang">+</button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn-add" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">+</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">🌾</div>
+    <h3>Produk tidak ditemukan</h3>
+    <p>Coba kata kunci lain atau lihat semua koleksi kami.</p>
+    <a href="{% url 'shop_home' %}" class="btn-primary" style="margin-top:1.5rem;">Lihat Semua Produk</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

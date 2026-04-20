@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} — A&A Bouquet{% endblock %}
+{% block extra_head %}
+<style>
+  .breadcrumb { font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 2rem; }
+  .breadcrumb a { color: var(--rose); }
+  .breadcrumb span { margin: 0 0.5rem; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin-bottom: 5rem; }
+  .product-image-wrap { background: linear-gradient(135deg, #f5ede8 0%, #faf7f4 100%); border-radius: 24px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 10rem; position: sticky; top: 88px; overflow: hidden; }
+  .product-image-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .detail-content { }
+  .detail-cat { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--rose); margin-bottom: 0.8rem; }
+  .detail-name { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; color: var(--ink); line-height: 1.1; margin-bottom: 0.5rem; }
+  .detail-price { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 600; color: var(--rose); margin: 1.5rem 0; }
+  .detail-desc { font-size: 0.92rem; color: var(--ink-soft); line-height: 1.9; margin-bottom: 2rem; }
+  .detail-meta { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2rem; }
+  .meta-item { display: flex; align-items: center; gap: 0.8rem; font-size: 0.88rem; color: var(--ink-mid); }
+  .meta-icon { width: 34px; height: 34px; background: var(--rose-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+  .stock-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500; margin-bottom: 1.5rem; }
+  .stock-ok { background: var(--green-light); color: var(--green); }
+  .stock-low { background: #fff8e1; color: #e65100; }
+  .detail-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .qty-control { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 40px; overflow: hidden; }
+  .qty-btn { width: 40px; height: 44px; border: none; background: transparent; cursor: pointer; font-size: 1.2rem; color: var(--ink-mid); transition: background 0.2s; }
+  .qty-btn:hover { background: var(--cream-dark); }
+  .qty-num { width: 44px; text-align: center; font-size: 0.95rem; font-weight: 500; color: var(--ink); }
+
+  .related-section { margin-top: 5rem; }
+  .related-section h2 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 400; margin-bottom: 2rem; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.2rem; }
+  .related-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: all 0.2s; }
+  .related-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .related-img { aspect-ratio: 1; background: linear-gradient(135deg, #f5ede8 0%, #faf7f4 100%); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; }
+  .related-img img { width: 100%; height: 100%; object-fit: cover; }
+  .related-body { padding: 1rem; }
+  .related-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; color: var(--ink); margin-bottom: 0.3rem; }
+  .related-price { font-size: 0.9rem; color: var(--rose); font-weight: 500; }
+
+  @media(max-width:768px) { .detail-grid { grid-template-columns: 1fr; } .product-image-wrap { position: static; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="{% url 'shop_home' %}">Beranda</a><span>›</span>
+  {% if product.category %}<a href="{% url 'shop_home' %}?category={{ product.category.slug }}">{{ product.category.name }}</a><span>›</span>{% endif %}
+  {{ product.name }}
+</div>
+
+<div class="detail-grid">
+  <div class="product-image-wrap">
+    {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">{% else %}💐{% endif %}
+  </div>
+  <div class="detail-content">
+    {% if product.category %}<div class="detail-cat">{{ product.category.name }}</div>{% endif %}
+    <h1 class="detail-name">{{ product.name }}</h1>
+    {% if product.is_featured %}<span class="tag tag-rose" style="font-size:0.75rem;">⭐ Produk Unggulan</span>{% endif %}
+    <div class="detail-price">{{ product.formatted_price }}</div>
+
+    <div class="stock-badge {% if product.stock > 5 %}stock-ok{% else %}stock-low{% endif %}">
+      {% if product.stock > 5 %}✓ Tersedia ({{ product.stock }} item){% elif product.stock > 0 %}⚠ Sisa {{ product.stock }} item{% else %}✗ Habis{% endif %}
+    </div>
+
+    <p class="detail-desc">{{ product.description }}</p>
+
+    <div class="detail-meta">
+      <div class="meta-item"><div class="meta-icon">🚚</div>Pengiriman ke seluruh Indonesia</div>
+      <div class="meta-item"><div class="meta-icon">🌹</div>Bunga segar dipanen hari ini</div>
+      <div class="meta-item"><div class="meta-icon">🎀</div>Kemasan premium, siap untuk hadiah</div>
+      <div class="meta-item"><div class="meta-icon">📸</div>Foto produk seperti yang dikirim</div>
+    </div>
+
+    {% if product.stock > 0 %}
+      {% if user.is_authenticated %}
+        <div class="detail-actions">
+          <form method="post" action="{% url 'add_to_cart' product.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-primary">🛒 Tambah ke Keranjang</button>
+          </form>
+          <a href="{% url 'cart' %}" class="btn-outline">Lihat Keranjang</a>
+        </div>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn-primary">Masuk untuk Membeli</a>
+      {% endif %}
+    {% else %}
+      <button class="btn-primary" disabled style="opacity:0.5;cursor:not-allowed;">Stok Habis</button>
+    {% endif %}
+  </div>
+</div>
+
+{% if related %}
+<div class="related-section">
+  <h2>Produk Serupa</h2>
+  <div class="related-grid">
+    {% for item in related %}
+    <a href="{% url 'product_detail' item.slug %}" class="related-card">
+      <div class="related-img">{% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.name }}">{% else %}🌺{% endif %}</div>
+      <div class="related-body">
+        <div class="related-name">{{ item.name }}</div>
+        <div class="related-price">{{ item.formatted_price }}</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

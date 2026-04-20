@@ -1,0 +1,79 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Log Aktivitas — Admin A&A Bouquet{% endblock %}
+{% block nav_logs %}active{% endblock %}
+{% block page_title %}Log Aktivitas{% endblock %}
+
+{% block extra_head %}
+<style>
+  .log-feed { display: flex; flex-direction: column; gap: 0; }
+  .log-entry {
+    background: var(--white); border: 1px solid var(--border);
+    border-bottom: none; padding: 1.1rem 1.5rem;
+    display: grid; grid-template-columns: 120px 1fr 160px 120px;
+    gap: 1rem; align-items: center; transition: background 0.15s;
+  }
+  .log-entry:first-child { border-radius: 16px 16px 0 0; }
+  .log-entry:last-child { border-bottom: 1px solid var(--border); border-radius: 0 0 16px 16px; }
+  .log-entry:only-child { border-radius: 16px; border-bottom: 1px solid var(--border); }
+  .log-entry:hover { background: #fdfcfb; }
+  .log-time { font-size: 0.75rem; color: var(--ink-soft); line-height: 1.5; }
+  .log-order { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 600; color: var(--rose); }
+  .log-action { font-size: 0.87rem; font-weight: 500; color: var(--ink); margin-bottom: 0.2rem; }
+  .log-desc { font-size: 0.78rem; color: var(--ink-soft); line-height: 1.5; }
+  .log-by { font-size: 0.75rem; color: var(--ink-soft); }
+  .log-by strong { color: var(--ink-mid); font-weight: 500; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .page-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 400; color: var(--ink); }
+  .count-badge { font-size: 0.78rem; background: var(--cream); color: var(--ink-soft); padding: 0.35rem 0.9rem; border-radius: 20px; border: 1px solid var(--border); }
+  .col-header { display: grid; grid-template-columns: 120px 1fr 160px 120px; gap: 1rem; padding: 0.6rem 1.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); background: #faf9f8; border: 1px solid var(--border); border-bottom: none; border-radius: 16px 16px 0 0; font-weight: 500; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>Log Permintaan Pesanan</h2>
+    <p style="font-size:0.83rem;color:var(--ink-soft);margin-top:0.3rem;">Rekam jejak semua perubahan status dan aktivitas pesanan</p>
+  </div>
+  <span class="count-badge">{{ logs|length }} log terbaru</span>
+</div>
+
+{% if logs %}
+<div class="col-header">
+  <span>Waktu</span>
+  <span>Aktivitas</span>
+  <span>Pesanan</span>
+  <span>Oleh</span>
+</div>
+<div class="log-feed">
+  {% for log in logs %}
+  <div class="log-entry">
+    <div class="log-time">
+      {{ log.created_at|date:"d M Y" }}<br>
+      <strong style="color:var(--ink-mid);">{{ log.created_at|date:"H:i" }}</strong>
+    </div>
+    <div>
+      <div class="log-action">{{ log.action }}</div>
+      {% if log.description %}<div class="log-desc">{{ log.description }}</div>{% endif %}
+    </div>
+    <div>
+      <a href="{% url 'admin_order_detail' log.order.pk %}" class="log-order">#{{ log.order.order_number }}</a>
+      <div style="font-size:0.75rem;color:var(--ink-soft);margin-top:2px;">
+        {{ log.order.user.get_full_name|default:log.order.user.username }}
+      </div>
+    </div>
+    <div class="log-by">
+      Oleh<br>
+      <strong>{{ log.created_by.first_name|default:log.created_by.username|default:"Sistem" }}</strong>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div style="text-align:center;padding:5rem 2rem;background:var(--white);border-radius:16px;border:1px solid var(--border);">
+  <div style="font-size:3.5rem;opacity:0.25;margin-bottom:1rem;">📋</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--ink-mid);margin-bottom:0.5rem;">Belum ada log</div>
+  <div style="font-size:0.87rem;color:var(--ink-soft);">Aktivitas akan tercatat di sini saat ada perubahan pesanan.</div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masuk — A&A Bouquet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #c9705a; --rose-light: #f0e0db; --rose-dark: #8b4a38;
+    --cream: #faf7f4; --ink: #1c1410; --ink-mid: #4a3f38; --ink-soft: #8a7970;
+    --white: #ffffff; --border: #e8e0d8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); min-height:100vh; display:flex; }
+  a { color:inherit; text-decoration:none; }
+
+  .split { display:grid; grid-template-columns:1fr 1fr; min-height:100vh; }
+
+  /* LEFT PANEL */
+  .panel-left {
+    background: var(--ink);
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:3rem;
+    position:relative; overflow:hidden;
+  }
+  .panel-left::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at 30% 60%, rgba(201,112,90,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 20%, rgba(201,112,90,0.1) 0%, transparent 50%);
+  }
+  .panel-deco {
+    position:absolute; bottom:-80px; right:-80px;
+    width:380px; height:380px; border-radius:50%;
+    border:1px solid rgba(201,112,90,0.15);
+  }
+  .panel-deco::before {
+    content:''; position:absolute; inset:40px; border-radius:50%;
+    border:1px solid rgba(201,112,90,0.1);
+  }
+  .left-logo { font-family:'Cormorant Garamond',serif; font-size:2.2rem; font-weight:600; color:var(--rose-light); position:relative; z-index:1; }
+  .left-logo span { color:rgba(255,255,255,0.3); font-weight:300; }
+  .left-body { position:relative; z-index:1; }
+  .left-body h2 { font-family:'Cormorant Garamond',serif; font-size:3.2rem; font-weight:300; color:var(--white); line-height:1.15; margin-bottom:1.2rem; }
+  .left-body h2 em { font-style:italic; color:var(--rose-light); }
+  .left-body p { font-size:0.9rem; color:rgba(255,255,255,0.45); line-height:1.8; max-width:320px; }
+  .left-flowers { display:flex; gap:1rem; margin-top:2rem; }
+  .flower-pill { background:rgba(201,112,90,0.15); border:1px solid rgba(201,112,90,0.25); color:var(--rose-light); font-size:0.75rem; padding:0.4rem 1rem; border-radius:20px; letter-spacing:0.05em; }
+  .left-foot { position:relative; z-index:1; font-size:0.78rem; color:rgba(255,255,255,0.25); }
+
+  /* RIGHT PANEL */
+  .panel-right { display:flex; align-items:center; justify-content:center; padding:3rem; background:var(--white); }
+  .form-box { width:100%; max-width:400px; }
+  .form-box h1 { font-family:'Cormorant Garamond',serif; font-size:2.4rem; font-weight:400; color:var(--ink); margin-bottom:0.4rem; }
+  .form-box .sub { font-size:0.88rem; color:var(--ink-soft); margin-bottom:2.5rem; }
+  .form-box .sub a { color:var(--rose); font-weight:500; }
+
+  .form-group { margin-bottom:1.2rem; }
+  .form-group label { display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); margin-bottom:0.5rem; }
+  .form-group input { width:100%; padding:0.85rem 1rem; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.92rem; color:var(--ink); background:var(--cream); transition:border-color 0.2s, box-shadow 0.2s; outline:none; }
+  .form-group input:focus { border-color:var(--rose); box-shadow:0 0 0 3px rgba(201,112,90,0.1); background:var(--white); }
+
+  .role-tabs { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom:1.8rem; }
+  .role-tab { padding:0.7rem; border:1.5px solid var(--border); border-radius:10px; font-size:0.85rem; text-align:center; cursor:pointer; transition:all 0.2s; color:var(--ink-mid); }
+  .role-tab.active { border-color:var(--rose); background:var(--rose-light); color:var(--rose-dark); font-weight:500; }
+  .role-tab input { display:none; }
+
+  .btn-submit { width:100%; padding:0.95rem; background:var(--rose); color:var(--white); border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:500; cursor:pointer; transition:all 0.2s; margin-top:0.5rem; letter-spacing:0.02em; }
+  .btn-submit:hover { background:var(--rose-dark); transform:translateY(-1px); box-shadow:0 6px 20px rgba(201,112,90,0.35); }
+
+  .divider { display:flex; align-items:center; gap:1rem; margin:1.5rem 0; }
+  .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+  .divider span { font-size:0.78rem; color:var(--ink-soft); }
+
+  .alert { padding:0.8rem 1rem; border-radius:8px; font-size:0.85rem; margin-bottom:1rem; }
+  .alert-error { background:#fce4ec; color:#c62828; border:1px solid #ef9a9a; }
+
+  @media(max-width:768px) {
+    .split { grid-template-columns:1fr; }
+    .panel-left { display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="split">
+  <div class="panel-left">
+    <div class="left-logo">A&A Bouquet<span>.</span></div>
+    <div class="left-body">
+      <h2>Rangkaian<br>bunga untuk<br><em>momen spesial</em></h2>
+      <p>Temukan koleksi buket segar kami yang dibuat dengan penuh cinta untuk setiap kesempatan istimewa.</p>
+      <div class="left-flowers">
+        <span class="flower-pill">🌹 Mawar Premium</span>
+        <span class="flower-pill">🌸 Bunga Musiman</span>
+        <span class="flower-pill">🎀 Custom Order</span>
+      </div>
+    </div>
+    <div class="left-foot">© 2024 A&A Bouquet. Semua hak dilindungi.</div>
+    <div class="panel-deco"></div>
+  </div>
+
+  <div class="panel-right">
+    <div class="form-box">
+      <h1>Selamat datang</h1>
+      <p class="sub">Belum punya akun? <a href="{% url 'register' %}">Daftar sekarang</a></p>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-error">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="role-tabs">
+        <label class="role-tab active" id="tab-user">
+          <input type="radio" name="role" value="user" checked> 👤 Pembeli
+        </label>
+        <label class="role-tab" id="tab-admin">
+          <input type="radio" name="role" value="admin"> 🛠️ Admin
+        </label>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="Masukkan username" required autofocus>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Masukkan password" required>
+        </div>
+        <button type="submit" class="btn-submit">Masuk →</button>
+      </form>
+
+      <div class="divider"><span>atau</span></div>
+      <p style="font-size:0.82rem;color:var(--ink-soft);text-align:center;">
+        Lupa password? <a href="#" style="color:var(--rose);">Reset di sini</a>
+      </p>
+    </div>
+  </div>
+</div>
+<script>
+  document.querySelectorAll('.role-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

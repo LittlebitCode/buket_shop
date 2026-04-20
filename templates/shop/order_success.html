@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Pesanan Berhasil — A&A Bouquet{% endblock %}
+{% block extra_head %}
+<style>
+  .success-wrap { max-width: 600px; margin: 4rem auto; text-align: center; }
+  .success-icon { width: 100px; height: 100px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto 2rem; }
+  .success-title { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; color: var(--ink); margin-bottom: 0.5rem; }
+  .success-sub { font-size: 1rem; color: var(--ink-soft); margin-bottom: 2.5rem; line-height: 1.7; }
+  .order-card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; text-align: left; margin-bottom: 2rem; }
+  .order-num { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: var(--rose); margin-bottom: 1rem; }
+  .order-row { display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 0.6rem; }
+  .order-row .label { color: var(--ink-soft); }
+  .order-row .value { font-weight: 500; color: var(--ink-mid); }
+  .success-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="success-wrap">
+  <div class="success-icon">✓</div>
+  <h1 class="success-title">Pesanan Diterima!</h1>
+  <p class="success-sub">Terima kasih telah memesan di A&A Bouquet. Kami akan segera memproses pesananmu dan menghubungimu untuk konfirmasi.</p>
+  <div class="order-card">
+    <div class="order-num">#{{ order.order_number }}</div>
+    <div class="order-row"><span class="label">Penerima</span><span class="value">{{ order.recipient_name }}</span></div>
+    <div class="order-row"><span class="label">Telepon</span><span class="value">{{ order.recipient_phone }}</span></div>
+    <div class="order-row"><span class="label">Alamat</span><span class="value">{{ order.delivery_address|truncatechars:50 }}</span></div>
+    {% if order.delivery_date %}<div class="order-row"><span class="label">Tanggal Kirim</span><span class="value">{{ order.delivery_date }}</span></div>{% endif %}
+    <div class="order-row"><span class="label">Total</span><span class="value" style="color:var(--rose);font-family:'Cormorant Garamond',serif;font-size:1.2rem;">Rp {{ order.total_price|floatformat:0 }}</span></div>
+    <div class="order-row"><span class="label">Status</span><span class="value" style="color:var(--green);">{{ order.get_status_display }}</span></div>
+  </div>
+  <div class="success-actions">
+    <a href="{% url 'my_orders' %}" class="btn-primary">📦 Pantau Pesanan</a>
+    <a href="{% url 'shop_home' %}" class="btn-outline">← Lanjut Belanja</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Checkout — A&A Bouquet{% endblock %}
+{% block extra_head %}
+<style>
+  .checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: 2.5rem; }
+  .checkout-title { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; margin-bottom: 2rem; }
+  .checkout-section { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 1.8rem; margin-bottom: 1.5rem; }
+  .checkout-section h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; margin-bottom: 1.5rem; color: var(--ink); display: flex; align-items: center; gap: 0.6rem; }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 0.4rem; }
+  .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--ink); background: var(--cream); outline: none; transition: all 0.2s; resize: vertical; }
+  .form-group input:focus, .form-group textarea:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(201,112,90,0.1); background: var(--white); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .order-summary { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 1.8rem; position: sticky; top: 88px; }
+  .order-summary h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; margin-bottom: 1.5rem; }
+  .osi { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .osi:last-of-type { border-bottom: none; }
+  .osi-img { width: 52px; height: 52px; border-radius: 10px; background: linear-gradient(135deg, #f5ede8, #faf7f4); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; overflow: hidden; flex-shrink: 0; }
+  .osi-img img { width: 100%; height: 100%; object-fit: cover; }
+  .osi-name { font-size: 0.88rem; font-weight: 500; color: var(--ink); }
+  .osi-sub { font-size: 0.78rem; color: var(--ink-soft); margin-top: 2px; }
+  .osi-price { margin-left: auto; font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+  .total-row { display: flex; justify-content: space-between; font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--ink); margin: 1rem 0 1.5rem; }
+
+  @media(max-width:900px) { .checkout-layout { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="checkout-title">Checkout</h1>
+<form method="post">
+  {% csrf_token %}
+  <div class="checkout-layout">
+    <div>
+      <div class="checkout-section">
+        <h3>📦 Data Penerima</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nama Penerima *</label>
+            <input type="text" name="recipient_name" value="{{ user.get_full_name|default:user.username }}" required>
+          </div>
+          <div class="form-group">
+            <label>No. Telepon *</label>
+            <input type="tel" name="recipient_phone" placeholder="08xxxxxxxxxx" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Alamat Pengiriman *</label>
+          <textarea name="delivery_address" rows="3" placeholder="Masukkan alamat lengkap, RT/RW, kelurahan, kecamatan, kota, kode pos" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Tanggal Pengiriman (opsional)</label>
+          <input type="date" name="delivery_date">
+        </div>
+      </div>
+
+      <div class="checkout-section">
+        <h3>💌 Catatan Tambahan</h3>
+        <div class="form-group">
+          <label>Pesan / Catatan</label>
+          <textarea name="notes" rows="3" placeholder="Mis: Tolong sertakan kartu ucapan dengan nama 'Untuk Mama tersayang'..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="order-summary">
+        <h3>Ringkasan Pesanan</h3>
+        {% for item in cart_items %}
+        <div class="osi">
+          <div class="osi-img">
+            {% if item.product.image %}<img src="{{ item.product.image.url }}">{% else %}💐{% endif %}
+          </div>
+          <div>
+            <div class="osi-name">{{ item.product.name }}</div>
+            <div class="osi-sub">×{{ item.quantity }}</div>
+          </div>
+          <div class="osi-price">Rp {{ item.subtotal|floatformat:0 }}</div>
+        </div>
+        {% endfor %}
+        <div class="total-row">
+          <span>Total</span>
+          <span>Rp {{ total|floatformat:0 }}</span>
+        </div>
+        <div style="background:var(--rose-light);border-radius:10px;padding:0.8rem 1rem;font-size:0.8rem;color:var(--rose-dark);margin-bottom:1.5rem;">
+          🌹 Pembayaran dilakukan via transfer setelah admin mengkonfirmasi pesanan Anda.
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;justify-content:center;padding:1rem;font-size:1rem;">
+          Buat Pesanan →
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

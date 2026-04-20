@@ -1,0 +1,122 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Kelola Produk — Admin A&A Bouquet{% endblock %}
+{% block nav_products %}active{% endblock %}
+{% block page_title %}Kelola Produk{% endblock %}
+
+{% block extra_head %}
+<style>
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.2rem; }
+  .prod-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+    overflow: hidden; transition: all 0.2s;
+  }
+  .prod-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .prod-card.unavailable { opacity: 0.55; }
+  .prod-img {
+    aspect-ratio: 4/3; background: linear-gradient(135deg, #f5ede8 0%, #faf7f4 100%);
+    display: flex; align-items: center; justify-content: center; font-size: 4rem;
+    position: relative; overflow: hidden;
+  }
+  .prod-img img { width: 100%; height: 100%; object-fit: cover; }
+  .prod-img-overlay {
+    position: absolute; inset: 0; background: rgba(28,20,16,0.5);
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .prod-card:hover .prod-img-overlay { opacity: 1; }
+  .prod-body { padding: 1.1rem; }
+  .prod-cat { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 0.3rem; }
+  .prod-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; color: var(--ink); margin-bottom: 0.4rem; }
+  .prod-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 0.8rem; }
+  .prod-price { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 600; color: var(--rose); }
+  .prod-stock { font-size: 0.75rem; color: var(--ink-soft); }
+  .prod-stock.low { color: #e65100; }
+  .prod-footer { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1.1rem; border-top: 1px solid var(--border); background: #fdfcfb; }
+  .toggle-btn { font-size: 0.75rem; padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; background: transparent; }
+  .toggle-btn.on { border-color: var(--green); color: var(--green); }
+  .toggle-btn.on:hover { background: var(--green-light); }
+  .toggle-btn.off { border-color: #e65100; color: #e65100; }
+  .toggle-btn.off:hover { background: #fff8e1; }
+  .featured-badge { font-size: 0.68rem; background: #fff8e1; color: #e65100; padding: 0.2rem 0.5rem; border-radius: 4px; }
+
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .page-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 400; color: var(--ink); }
+  .tip-box { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; font-size: 0.83rem; color: var(--ink-mid); }
+  .tip-box .icon { font-size: 1.2rem; }
+
+  .stats-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+  .mini-stat { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1.2rem; font-size: 0.82rem; color: var(--ink-soft); }
+  .mini-stat strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; color: var(--ink); margin-bottom: 0.1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>Kelola Produk</h2>
+    <p style="font-size:0.83rem;color:var(--ink-soft);margin-top:0.2rem;">Aktifkan/nonaktifkan produk dari halaman toko</p>
+  </div>
+  <a href="/django-admin/products/product/add/" class="btn-primary-sm" style="display:inline-flex;align-items:center;gap:0.4rem;">+ Tambah Produk</a>
+</div>
+
+<div class="stats-row">
+  <div class="mini-stat"><strong>{{ products|length }}</strong>Total Produk</div>
+  <div class="mini-stat"><strong>{{ products|length }}</strong>Produk Aktif</div>
+  <div class="mini-stat"><strong>{{ categories|length }}</strong>Kategori</div>
+</div>
+
+<div class="tip-box">
+  <span class="icon">💡</span>
+  <span>Untuk menambah/mengedit detail produk, gunakan <a href="/django-admin/products/product/" style="color:var(--rose);">Django Admin</a>. Di sini Anda dapat mengaktifkan atau menonaktifkan produk dengan cepat.</span>
+</div>
+
+{% if products %}
+<div class="product-grid">
+  {% for product in products %}
+  <div class="prod-card {% if not product.is_available %}unavailable{% endif %}">
+    <div class="prod-img">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+      {% else %}
+        💐
+      {% endif %}
+      <div class="prod-img-overlay">
+        <a href="/django-admin/products/product/{{ product.pk }}/change/" class="btn-sm" style="background:white;font-size:0.75rem;">✏️ Edit</a>
+      </div>
+      {% if not product.is_available %}
+        <div style="position:absolute;top:0.6rem;right:0.6rem;background:#fce4ec;color:#c62828;font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:4px;font-weight:500;">Nonaktif</div>
+      {% endif %}
+      {% if product.is_featured %}
+        <div style="position:absolute;top:0.6rem;left:0.6rem;" class="featured-badge">⭐ Unggulan</div>
+      {% endif %}
+    </div>
+    <div class="prod-body">
+      <div class="prod-cat">{{ product.category.name|default:'Tanpa Kategori' }}</div>
+      <div class="prod-name">{{ product.name }}</div>
+      <div class="prod-meta">
+        <div class="prod-price">{{ product.formatted_price }}</div>
+        <div class="prod-stock {% if product.stock < 5 %}low{% endif %}">Stok: {{ product.stock }}</div>
+      </div>
+    </div>
+    <div class="prod-footer">
+      <span style="font-size:0.75rem;color:{% if product.is_available %}var(--green){% else %}#e65100{% endif %};">
+        {% if product.is_available %}● Aktif{% else %}○ Nonaktif{% endif %}
+      </span>
+      <form method="post" action="{% url 'admin_product_toggle' product.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="toggle-btn {% if product.is_available %}on{% else %}off{% endif %}">
+          {% if product.is_available %}Nonaktifkan{% else %}Aktifkan{% endif %}
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div style="text-align:center;padding:5rem;background:var(--white);border-radius:16px;border:1px solid var(--border);">
+  <div style="font-size:3.5rem;opacity:0.25;margin-bottom:1rem;">🌸</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--ink-mid);margin-bottom:0.5rem;">Belum ada produk</div>
+  <a href="/django-admin/products/product/add/" class="btn-primary-sm" style="margin-top:1rem;display:inline-block;">+ Tambah Produk Pertama</a>
+</div>
+{% endif %}
+{% endblock %}

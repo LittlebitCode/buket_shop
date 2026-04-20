@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Pesanan Saya — A&A Bouquet{% endblock %}
+{% block extra_head %}
+<style>
+  .page-title { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; margin-bottom: 2rem; }
+  .order-list { display: flex; flex-direction: column; gap: 1.2rem; }
+  .order-item { background: var(--white); border: 1px solid var(--border); border-radius: 18px; padding: 1.5rem; transition: all 0.2s; display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; }
+  .order-item:hover { box-shadow: var(--shadow); border-color: transparent; }
+  .oi-num { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; color: var(--rose); margin-bottom: 0.3rem; }
+  .oi-date { font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 0.6rem; }
+  .oi-items { font-size: 0.85rem; color: var(--ink-mid); }
+  .oi-total { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--ink); margin-bottom: 0.5rem; text-align: right; }
+  .status-badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
+  .status-pending { background: #fff8e1; color: #e65100; }
+  .status-confirmed { background: #e8f5e9; color: #2e7d32; }
+  .status-processing { background: #e3f2fd; color: #1565c0; }
+  .status-shipped { background: #f3e5f5; color: #6a1b9a; }
+  .status-delivered { background: var(--green-light); color: var(--green); }
+  .status-cancelled { background: #fce4ec; color: #c62828; }
+  .empty-state { text-align: center; padding: 5rem 2rem; }
+  .empty-state .icon { font-size: 4rem; opacity: 0.3; margin-bottom: 1rem; }
+  .empty-state h2 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--ink-mid); margin-bottom: 0.5rem; }
+</style>
+{% endblock %}
+{% block content %}
+<h1 class="page-title">Pesanan Saya</h1>
+{% if orders %}
+<div class="order-list">
+  {% for order in orders %}
+  <a href="{% url 'order_detail' order.order_number %}" class="order-item" style="text-decoration:none;">
+    <div>
+      <div class="oi-num">#{{ order.order_number }}</div>
+      <div class="oi-date">{{ order.created_at|date:"d F Y, H:i" }}</div>
+      <div class="oi-items">
+        {% for item in order.items.all|slice:":3" %}{{ item.product_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        {% if order.items.count > 3 %}… +{{ order.items.count|add:"-3" }} lainnya{% endif %}
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <div class="oi-total">Rp {{ order.total_price|floatformat:0 }}</div>
+      <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="icon">📦</div>
+  <h2>Belum ada pesanan</h2>
+  <p style="color:var(--ink-soft);margin-bottom:2rem;">Yuk, mulai pesan buket cantik pertamamu!</p>
+  <a href="{% url 'shop_home' %}" class="btn-primary">🌸 Belanja Sekarang</a>
+</div>
+{% endif %}
+{% endblock %}

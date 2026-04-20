@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Pesanan #{{ order.order_number }} — A&A Bouquet{% endblock %}
+{% block extra_head %}
+<style>
+  .page-title { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; margin-bottom: 2rem; }
+  .detail-layout { display: grid; grid-template-columns: 1fr 340px; gap: 2rem; }
+  .detail-card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 1.8rem; margin-bottom: 1.5rem; }
+  .detail-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; margin-bottom: 1.2rem; color: var(--ink); }
+  .info-row { display: flex; justify-content: space-between; font-size: 0.88rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+  .info-row:last-child { border-bottom: none; }
+  .info-row .label { color: var(--ink-soft); }
+  .info-row .value { font-weight: 500; color: var(--ink-mid); }
+  .order-item-row { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
+  .order-item-row:last-child { border-bottom: none; }
+  .oi-img { width: 48px; height: 48px; border-radius: 10px; background: var(--rose-light); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+  .oi-name { font-size: 0.9rem; font-weight: 500; color: var(--ink); flex: 1; }
+  .oi-qty { font-size: 0.82rem; color: var(--ink-soft); }
+  .oi-price { font-size: 0.92rem; font-weight: 500; color: var(--ink); }
+  .status-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.82rem; font-weight: 500; }
+  .status-pending { background: #fff8e1; color: #e65100; }
+  .status-confirmed { background: #e8f5e9; color: #2e7d32; }
+  .status-processing { background: #e3f2fd; color: #1565c0; }
+  .status-shipped { background: #f3e5f5; color: #6a1b9a; }
+  .status-delivered { background: var(--green-light); color: var(--green); }
+  .status-cancelled { background: #fce4ec; color: #c62828; }
+  .timeline { list-style: none; }
+  .timeline-item { display: flex; gap: 1rem; padding-bottom: 1.2rem; position: relative; }
+  .timeline-item::before { content: ''; position: absolute; left: 14px; top: 28px; bottom: 0; width: 1px; background: var(--border); }
+  .timeline-item:last-child::before { display: none; }
+  .tl-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--rose-light); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+  .tl-action { font-size: 0.88rem; font-weight: 500; color: var(--ink); }
+  .tl-desc { font-size: 0.78rem; color: var(--ink-soft); margin-top: 2px; }
+  .tl-time { font-size: 0.72rem; color: var(--ink-soft); margin-top: 2px; }
+</style>
+{% endblock %}
+{% block content %}
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;">
+  <a href="{% url 'my_orders' %}" style="color:var(--rose);font-size:0.85rem;">← Pesanan Saya</a>
+</div>
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;">
+  <h1 class="page-title" style="margin:0;">#{{ order.order_number }}</h1>
+  <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+</div>
+
+<div class="detail-layout">
+  <div>
+    <div class="detail-card">
+      <h3>Detail Pesanan</h3>
+      {% for item in order.items.all %}
+      <div class="order-item-row">
+        <div class="oi-img">💐</div>
+        <div>
+          <div class="oi-name">{{ item.product_name }}</div>
+          <div class="oi-qty">×{{ item.quantity }}</div>
+        </div>
+        <div class="oi-price">Rp {{ item.subtotal|floatformat:0 }}</div>
+      </div>
+      {% endfor %}
+      <div style="display:flex;justify-content:space-between;padding-top:1rem;font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--ink);">
+        <span>Total</span><span style="color:var(--rose);">Rp {{ order.total_price|floatformat:0 }}</span>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <h3>Timeline Pesanan</h3>
+      {% if logs %}
+      <ul class="timeline">
+        {% for log in logs %}
+        <li class="timeline-item">
+          <div class="tl-dot">📌</div>
+          <div>
+            <div class="tl-action">{{ log.action }}</div>
+            {% if log.description %}<div class="tl-desc">{{ log.description }}</div>{% endif %}
+            <div class="tl-time">{{ log.created_at|date:"d M Y, H:i" }}</div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p style="color:var(--ink-soft);font-size:0.88rem;">Belum ada aktivitas.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div>
+    <div class="detail-card">
+      <h3>Informasi Pengiriman</h3>
+      <div class="info-row"><span class="label">Penerima</span><span class="value">{{ order.recipient_name }}</span></div>
+      <div class="info-row"><span class="label">Telepon</span><span class="value">{{ order.recipient_phone }}</span></div>
+      <div class="info-row"><span class="label">Alamat</span><span class="value">{{ order.delivery_address }}</span></div>
+      {% if order.delivery_date %}<div class="info-row"><span class="label">Tgl Kirim</span><span class="value">{{ order.delivery_date }}</span></div>{% endif %}
+      {% if order.notes %}<div class="info-row"><span class="label">Catatan</span><span class="value">{{ order.notes }}</span></div>{% endif %}
+    </div>
+    <div class="detail-card">
+      <h3>Info Pesanan</h3>
+      <div class="info-row"><span class="label">No. Pesanan</span><span class="value">{{ order.order_number }}</span></div>
+      <div class="info-row"><span class="label">Tanggal</span><span class="value">{{ order.created_at|date:"d M Y" }}</span></div>
+      <div class="info-row"><span class="label">Status</span><span class="value"><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></span></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

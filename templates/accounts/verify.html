@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Verifikasi Akun — A&A Bouquet{% endblock %}
+
+{% block content %}
+<div style="max-width:440px;margin:5rem auto;padding:2.5rem;background:var(--white);border-radius:24px;border:1px solid var(--border);box-shadow:var(--shadow-lg);text-align:center;">
+    <div style="font-size:3.5rem;margin-bottom:1.5rem;">📧</div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--ink);margin-bottom:0.8rem;">Verifikasi Kode</h1>
+    <p style="font-size:0.9rem;color:var(--ink-soft);line-height:1.6;margin-bottom:2rem;">
+        Kami telah mengirimkan 6 digit kode verifikasi ke email:<br>
+        <strong style="color:var(--ink);">{{ email }}</strong>
+    </p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="padding:0.8rem;border-radius:10px;margin-bottom:1.5rem;font-size:0.85rem;background:#fff5f5;color:#c62828;border:1px solid #ffcdd2;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom:1.5rem;">
+            <input type="text" name="code" placeholder="Masukan 6 digit kode" required maxlength="6"
+                   style="width:100%;padding:1rem;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:1.1rem;text-align:center;letter-spacing:0.5em;outline:none;transition:all 0.2s;background:var(--cream);">
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;padding:1rem;border-radius:12px;font-size:1rem;">Verifikasi Sekarang</button>
+    </form>
+
+    <div style="margin-top:2rem;font-size:0.85rem;color:var(--ink-soft);">
+        Tidak menerima kode? <a href="{% url 'login' %}" style="color:var(--rose);text-decoration:underline;">Coba login ulang</a>
+    </div>
+</div>
+
+<style>
+    /* Prevent default focusing behavior to keep the design clean */
+    input:focus { border-color: var(--rose) !important; background: var(--white) !important; box-shadow: 0 0 0 4px rgba(201,112,90,0.1); }
+</style>
+{% endblock %}

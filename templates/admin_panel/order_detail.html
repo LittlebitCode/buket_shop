@@ -1,0 +1,131 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Pesanan #{{ order.order_number }} — Admin{% endblock %}
+{% block nav_orders %}active{% endblock %}
+{% block page_title %}Detail Pesanan{% endblock %}
+
+{% block extra_head %}
+<style>
+  .detail-layout { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; }
+  .detail-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1.2rem; }
+  .detail-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 1.2rem; color: var(--ink); }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .info-item .info-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 0.3rem; }
+  .info-item .info-val { font-size: 0.9rem; font-weight: 500; color: var(--ink-mid); }
+  .order-item-row { display: flex; align-items: center; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid #f5f2ef; }
+  .order-item-row:last-child { border-bottom: none; }
+  .oi-icon { width: 44px; height: 44px; background: var(--rose-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+  .oi-name { flex: 1; font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+  .oi-qty { font-size: 0.78rem; color: var(--ink-soft); margin-top: 2px; }
+  .oi-price { font-size: 0.95rem; font-weight: 600; color: var(--ink); font-family: 'Cormorant Garamond', serif; }
+
+  .status-form { background: var(--white); border-radius: 16px; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1.2rem; }
+  .status-form h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 1.2rem; color: var(--ink); }
+  .status-form select, .status-form textarea { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--ink); background: var(--cream); outline: none; margin-bottom: 0.8rem; transition: all 0.2s; }
+  .status-form select:focus, .status-form textarea:focus { border-color: var(--rose); }
+
+  .timeline { list-style: none; }
+  .timeline-item { display: flex; gap: 0.8rem; padding-bottom: 1rem; position: relative; }
+  .timeline-item::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: 0; width: 1px; background: #f0ebe4; }
+  .timeline-item:last-child::before { display: none; }
+  .tl-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--rose-light); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: var(--rose-dark); margin-top: 2px; }
+  .tl-action { font-size: 0.85rem; font-weight: 500; color: var(--ink); }
+  .tl-desc { font-size: 0.78rem; color: var(--ink-soft); margin-top: 1px; line-height: 1.5; }
+  .tl-time { font-size: 0.7rem; color: var(--ink-soft); margin-top: 2px; }
+  .tl-by { font-size: 0.7rem; color: var(--rose); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+  <a href="{% url 'admin_orders' %}" class="btn-sm">← Kembali</a>
+  <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--ink);">#{{ order.order_number }}</h2>
+  <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+  <span style="font-size:0.8rem;color:var(--ink-soft);margin-left:auto;">{{ order.created_at|date:"d F Y, H:i" }}</span>
+</div>
+
+<div class="detail-layout">
+  <div>
+    <div class="detail-card">
+      <h3>🛒 Item Pesanan</h3>
+      {% for item in order.items.all %}
+      <div class="order-item-row">
+        <div class="oi-icon">💐</div>
+        <div>
+          <div class="oi-name">{{ item.product_name }}</div>
+          <div class="oi-qty">×{{ item.quantity }} — Rp {{ item.price|floatformat:0 }} / item</div>
+        </div>
+        <div class="oi-price">Rp {{ item.subtotal|floatformat:0 }}</div>
+      </div>
+      {% endfor %}
+      <div style="display:flex;justify-content:space-between;padding-top:1rem;border-top:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--ink);">
+        <span>Total</span><span style="color:var(--rose);">Rp {{ order.total_price|floatformat:0 }}</span>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <h3>📋 Timeline Aktivitas</h3>
+      {% if logs %}
+      <ul class="timeline">
+        {% for log in logs %}
+        <li class="timeline-item">
+          <div class="tl-dot">●</div>
+          <div>
+            <div class="tl-action">{{ log.action }}</div>
+            {% if log.description %}<div class="tl-desc">{{ log.description }}</div>{% endif %}
+            <div class="tl-time">{{ log.created_at|date:"d M Y, H:i" }}
+              {% if log.created_by %} · <span class="tl-by">{{ log.created_by.first_name|default:log.created_by.username }}</span>{% endif %}
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p style="color:var(--ink-soft);font-size:0.88rem;">Belum ada aktivitas.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div>
+    <div class="detail-card">
+      <h3>👤 Informasi Pelanggan</h3>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">Nama</div><div class="info-val">{{ order.user.get_full_name|default:order.user.username }}</div></div>
+        <div class="info-item"><div class="info-label">Username</div><div class="info-val">@{{ order.user.username }}</div></div>
+        <div class="info-item"><div class="info-label">Email</div><div class="info-val" style="font-size:0.82rem;">{{ order.user.email }}</div></div>
+        <div class="info-item"><div class="info-label">Bergabung</div><div class="info-val">{{ order.user.date_joined|date:"d M Y" }}</div></div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <h3>📦 Pengiriman</h3>
+      <div style="display:flex;flex-direction:column;gap:0.8rem;">
+        <div class="info-item"><div class="info-label">Penerima</div><div class="info-val">{{ order.recipient_name }}</div></div>
+        <div class="info-item"><div class="info-label">Telepon</div><div class="info-val">{{ order.recipient_phone }}</div></div>
+        <div class="info-item"><div class="info-label">Alamat</div><div class="info-val" style="line-height:1.6;">{{ order.delivery_address }}</div></div>
+        {% if order.delivery_date %}<div class="info-item"><div class="info-label">Tgl Kirim</div><div class="info-val">{{ order.delivery_date }}</div></div>{% endif %}
+        {% if order.notes %}<div class="info-item"><div class="info-label">Catatan</div><div class="info-val">{{ order.notes }}</div></div>{% endif %}
+      </div>
+    </div>
+
+    <div class="status-form">
+      <h3>🔄 Update Status</h3>
+      <form method="post">
+        {% csrf_token %}
+        <select name="status">
+          {% for val, label in order.STATUS_CHOICES %}
+          <option value="{{ val }}" {% if order.status == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <textarea name="note" rows="2" placeholder="Catatan perubahan status (opsional)…"></textarea>
+        <button type="submit" class="btn-primary-sm" style="width:100%;padding:0.7rem;">Simpan Perubahan</button>
+      </form>
+    </div>
+    <div style="margin-top:2rem;text-align:right;">
+      <form method="post" action="{% url 'admin_order_delete' order.pk %}" onsubmit="return confirm('⚠️ Hapus pesanan ini secara permanen? Tindakan ini tidak dapat dibatalkan.')">
+        {% csrf_token %}
+        <button type="submit" style="background:none;border:none;color:#c62828;font-size:0.8rem;text-decoration:underline;cursor:pointer;">🗑️ Hapus Pesanan Ini</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

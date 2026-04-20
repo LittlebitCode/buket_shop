@@ -1,0 +1,193 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Dashboard Admin — A&A Bouquet{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_head %}
+<style>
+  .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  .chart-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); padding: 1.5rem; }
+  .chart-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400; color: var(--ink); margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: space-between; }
+  .chart-card h3 span { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; color: var(--ink-soft); }
+  canvas { max-height: 260px; }
+  .donut-wrap { display: flex; flex-direction: column; align-items: center; }
+  .legend { width: 100%; margin-top: 1rem; }
+  .legend-item { display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; padding: 0.4rem 0; border-bottom: 1px solid #f5f2ef; }
+  .legend-item:last-child { border-bottom: none; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-label { color: var(--ink-mid); flex: 1; margin-left: 0.6rem; }
+  .legend-val { font-weight: 500; color: var(--ink); }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- STAT CARDS -->
+<div class="stat-grid">
+  <div class="stat-card accent">
+    <div class="label">💰 Total Pendapatan</div>
+    <div class="value">Rp {{ total_revenue|floatformat:0 }}</div>
+    <div class="sub">Dari pesanan selesai</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">📦 Total Pesanan</div>
+    <div class="value">{{ total_orders }}</div>
+    <div class="sub">Semua waktu</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">⏳ Menunggu</div>
+    <div class="value">{{ pending_orders }}</div>
+    <div class="sub">Perlu dikonfirmasi</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">🌸 Total Produk</div>
+    <div class="value">{{ total_products }}</div>
+    <div class="sub">Produk aktif</div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="charts-grid">
+  <div class="chart-card">
+    <h3>Pesanan 14 Hari Terakhir <span>Harian</span></h3>
+    <canvas id="ordersChart"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3>Status Pesanan</h3>
+    <div class="donut-wrap">
+      <canvas id="statusChart" style="max-height:180px;max-width:180px;"></canvas>
+      <div class="legend" id="statusLegend"></div>
+    </div>
+  </div>
+</div>
+
+<!-- REVENUE CHART -->
+<div class="chart-card" style="margin-bottom:1.5rem;">
+  <h3>Pendapatan 14 Hari Terakhir <span>Rp</span></h3>
+  <canvas id="revenueChart" style="max-height:200px;"></canvas>
+</div>
+
+<!-- RECENT ORDERS TABLE -->
+<div class="data-card">
+  <div class="data-card-header">
+    <h3>Pesanan Terbaru</h3>
+    <a href="{% url 'admin_orders' %}" class="btn-sm">Lihat Semua →</a>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>No. Pesanan</th>
+        <th>Pelanggan</th>
+        <th>Penerima</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Tanggal</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in recent_orders %}
+      <tr>
+        <td><strong style="color:var(--rose);">#{{ order.order_number }}</strong></td>
+        <td>{{ order.user.get_full_name|default:order.user.username }}</td>
+        <td>{{ order.recipient_name }}</td>
+        <td style="font-weight:500;">Rp {{ order.total_price|floatformat:0 }}</td>
+        <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+        <td style="color:var(--ink-soft);">{{ order.created_at|date:"d M, H:i" }}</td>
+        <td><a href="{% url 'admin_order_detail' order.pk %}" class="btn-sm">Detail</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" style="text-align:center;color:var(--ink-soft);padding:3rem;">Belum ada pesanan</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+const chartData = {{ chart_data_json|safe }};
+const labels = chartData.map(d => d.date);
+const orders = chartData.map(d => d.orders);
+const revenue = chartData.map(d => d.revenue);
+
+const rose = '#c9705a';
+const roseLight = 'rgba(201,112,90,0.12)';
+
+// Orders chart
+new Chart(document.getElementById('ordersChart'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [{
+      label: 'Pesanan',
+      data: orders,
+      backgroundColor: roseLight,
+      borderColor: rose,
+      borderWidth: 1.5,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#8a7970' } },
+      y: { grid: { color: '#f5f2ef' }, ticks: { font: { size: 10 }, color: '#8a7970', stepSize: 1 } }
+    }
+  }
+});
+
+// Revenue chart
+new Chart(document.getElementById('revenueChart'), {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [{
+      label: 'Pendapatan',
+      data: revenue,
+      borderColor: rose,
+      backgroundColor: roseLight,
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: rose,
+      pointRadius: 3,
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#8a7970' } },
+      y: { grid: { color: '#f5f2ef' }, ticks: { font: { size: 10 }, color: '#8a7970', callback: v => 'Rp ' + v.toLocaleString('id') } }
+    }
+  }
+});
+
+// Status donut
+const statusData = {{ status_data|safe }};
+const statusLabels = { pending: 'Menunggu', confirmed: 'Konfirmasi', processing: 'Proses', shipped: 'Dikirim', delivered: 'Selesai', cancelled: 'Batal' };
+const statusColors = { pending: '#FFB74D', confirmed: '#81C784', processing: '#64B5F6', shipped: '#CE93D8', delivered: '#4a6741', cancelled: '#EF9A9A' };
+const sLabels = statusData.map(s => statusLabels[s.status] || s.status);
+const sValues = statusData.map(s => s.count);
+const sColors = statusData.map(s => statusColors[s.status] || '#ccc');
+
+new Chart(document.getElementById('statusChart'), {
+  type: 'doughnut',
+  data: { labels: sLabels, datasets: [{ data: sValues, backgroundColor: sColors, borderWidth: 0, hoverOffset: 4 }] },
+  options: {
+    responsive: true, maintainAspectRatio: true, cutout: '72%',
+    plugins: { legend: { display: false } }
+  }
+});
+
+// Legend
+const legend = document.getElementById('statusLegend');
+statusData.forEach((s, i) => {
+  legend.innerHTML += `<div class="legend-item">
+    <div class="legend-dot" style="background:${sColors[i]}"></div>
+    <span class="legend-label">${sLabels[i]}</span>
+    <span class="legend-val">${sValues[i]}</span>
+  </div>`;
+});
+</script>
+{% endblock %}

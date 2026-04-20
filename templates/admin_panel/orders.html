@@ -1,0 +1,87 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Pesanan — Admin A&A Bouquet{% endblock %}
+{% block nav_orders %}active{% endblock %}
+{% block page_title %}Manajemen Pesanan{% endblock %}
+
+{% block extra_head %}
+<style>
+  .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center; flex-wrap: wrap; }
+  .filter-search { flex: 1; min-width: 200px; position: relative; }
+  .filter-search input { width: 100%; padding: 0.7rem 1rem 0.7rem 2.5rem; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; background: var(--white); outline: none; transition: all 0.2s; }
+  .filter-search input:focus { border-color: var(--rose); }
+  .filter-search .icon { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--ink-soft); font-size: 0.9rem; }
+  .filter-tabs { display: flex; gap: 0.4rem; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 0.3rem; }
+  .filter-tab { padding: 0.4rem 0.9rem; border-radius: 7px; font-size: 0.8rem; color: var(--ink-soft); cursor: pointer; transition: all 0.2s; white-space: nowrap; text-decoration: none; }
+  .filter-tab:hover { background: #f5f2ef; color: var(--ink); }
+  .filter-tab.active { background: var(--ink); color: var(--white); }
+  .order-count { font-size: 0.8rem; color: var(--ink-soft); background: var(--cream); padding: 0.4rem 0.8rem; border-radius: 8px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="filters">
+  <form method="get" style="flex:1;display:flex;gap:1rem;flex-wrap:wrap;">
+    <div class="filter-search">
+      <span class="icon">🔍</span>
+      <input type="text" name="search" value="{{ search }}" placeholder="Cari nomor pesanan, nama pelanggan…">
+      {% if status_filter %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
+    </div>
+    <button type="submit" class="btn-primary-sm">Cari</button>
+  </form>
+  <div class="filter-tabs">
+    <a href="{% url 'admin_orders' %}" class="filter-tab {% if not status_filter %}active{% endif %}">Semua</a>
+    {% for val, label in status_choices %}
+    <a href="?status={{ val }}{% if search %}&search={{ search }}{% endif %}" class="filter-tab {% if status_filter == val %}active{% endif %}">{{ label }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="data-card">
+  <div class="data-card-header">
+    <h3>Daftar Pesanan</h3>
+    <span class="order-count">{{ orders|length }} pesanan</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>No. Pesanan</th>
+        <th>Pelanggan</th>
+        <th>Penerima</th>
+        <th>Produk</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Tanggal</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <td><strong style="color:var(--rose);font-family:'Cormorant Garamond',serif;font-size:1rem;">#{{ order.order_number }}</strong></td>
+        <td>
+          <div style="font-weight:500;font-size:0.88rem;">{{ order.user.get_full_name|default:order.user.username }}</div>
+          <div style="font-size:0.75rem;color:var(--ink-soft);">@{{ order.user.username }}</div>
+        </td>
+        <td>{{ order.recipient_name }}</td>
+        <td style="color:var(--ink-soft);font-size:0.82rem;">
+          {% for item in order.items.all|slice:":2" %}{{ item.product_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          {% if order.items.count > 2 %}<span style="color:var(--rose);">+{{ order.items.count|add:"-2" }}</span>{% endif %}
+        </td>
+        <td style="font-weight:600;font-family:'Cormorant Garamond',serif;font-size:1rem;">Rp {{ order.total_price|floatformat:0 }}</td>
+        <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+        <td style="color:var(--ink-soft);font-size:0.8rem;">{{ order.created_at|date:"d M Y" }}<br>{{ order.created_at|date:"H:i" }}</td>
+        <td style="display:flex;gap:0.5rem;">
+          <a href="{% url 'admin_order_detail' order.pk %}" class="btn-sm" title="Lihat Detail">Detail →</a>
+          <form method="post" action="{% url 'admin_order_delete' order.pk %}" onsubmit="return confirm('Hapus pesanan ini secara permanen?')">
+            {% csrf_token %}
+            <button type="submit" class="btn-sm" style="background:#fff5f5;color:#c62828;border-color:#ffcdd2;" title="Hapus Pesanan">🗑️</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" style="text-align:center;color:var(--ink-soft);padding:3rem;">Tidak ada pesanan ditemukan</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

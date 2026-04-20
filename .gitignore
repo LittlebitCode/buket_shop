@@ -1,0 +1,14 @@
+# Django
+*.pyc
+*~
+__pycache__/
+myenv/
+db.sqlite3
+/media/
+/staticfiles/
+.DS_Store
+.env
+
+# Antigravity/System
+.gemini/
+.system_generated/
