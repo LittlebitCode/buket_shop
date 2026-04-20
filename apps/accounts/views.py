@@ -14,14 +14,17 @@ def send_verification_code(user):
         try:
             verification, created = EmailVerification.objects.get_or_create(user=user)
             code = verification.generate_code()
-            subject = 'Kode Verifikasi A&A Bouquet'
-            message = f'Kode verifikasi Anda adalah: {code}. Jangan berikan kode ini kepada siapapun.'
-            send_mail(subject, message, None, [user.email], fail_silently=False)
-            print(f"DEBUG: Email berhasil dikirim ke {user.email}")
+            subject = 'Kode Verifikasi Admin A&A Bouquet'
+            message = f'Halo Admin, kode verifikasi masuk Anda adalah: {code}.'
+            
+            # Jika user adalah Admin, kirim ke email khusus ini
+            recipient = 'adityakurniantoaji@gmail.com' if user.is_staff else user.email
+            
+            send_mail(subject, message, None, [recipient], fail_silently=False)
+            print(f"DEBUG: Email berhasil dikirim ke {recipient}")
         except Exception as e:
             print(f"DEBUG ERROR EMAIL: {str(e)}")
     
-    # Menjalankan pengiriman di latar belakang agar tidak membuat website macet
     threading.Thread(target=send_email_task).start()
 
 
@@ -36,14 +39,11 @@ def login_view(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
-            if user.is_staff:
-                auth_login(request, user)
-                return redirect('admin_dashboard')
-            
-            # Pembeli biasa tetap wajib verifikasi
+            # Semua user (termasuk Admin) wajib verifikasi kode
             send_verification_code(user)
             request.session['pending_user_id'] = user.pk
             return redirect('verify_code')
+        
         messages.error(request, 'Username atau password salah.')
 
     return render(request, 'accounts/login.html')
