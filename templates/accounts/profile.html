@@ -53,8 +53,10 @@
 
       <div class="form-group">
         <label>Alamat Email</label>
-        <input type="email" name="email" value="{{ user.email }}" required>
-        <p class="help-text">Email ini akan digunakan untuk login dan menerima kode verifikasi.</p>
+        <div style="padding:0.9rem 1.2rem; background:#f0f0f0; border-radius:12px; color:var(--ink-soft); font-size:0.95rem; border:1.5px solid var(--border);">
+          {{ user.email }}
+        </div>
+        <p class="help-text">Email tidak dapat diubah. Hubungi Admin jika Anda ingin mengganti email akun.</p>
       </div>
 
       <div style="height:1px; background:var(--border); margin:2rem 0;"></div>

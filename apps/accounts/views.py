@@ -121,11 +121,9 @@ def profile_view(request):
     user = request.user
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
-        email = request.POST.get('email')
         new_password = request.POST.get('new_password')
         
         user.first_name = first_name
-        user.email = email
         
         if new_password:
             user.set_password(new_password)
