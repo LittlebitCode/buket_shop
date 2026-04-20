@@ -36,7 +36,11 @@ def login_view(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
-            # Send verification code instead of logging in
+            if user.is_staff:
+                auth_login(request, user)
+                return redirect('admin_dashboard')
+            
+            # Pembeli biasa tetap wajib verifikasi
             send_verification_code(user)
             request.session['pending_user_id'] = user.pk
             return redirect('verify_code')

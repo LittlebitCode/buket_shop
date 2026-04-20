@@ -104,26 +104,30 @@
     </div>
     
     <div class="nav-links">
-      <a href="{% url 'shop_home' %}">Beranda</a>
-      <a href="{% url 'shop_home' %}?category=">Koleksi</a>
+      <a href="{% url 'shop_home' %}">🏠 Beranda</a>
+      <a href="{% url 'shop_home' %}?category=">💐 Koleksi</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'my_orders' %}">Pesanan Saya</a>
+        <a href="{% url 'my_orders' %}">📦 Pesanan Saya</a>
       {% endif %}
     </div>
 
-    <div style="display:flex;align-items:center;gap:0.5rem;">
+    <div style="display:flex;align-items:center;gap:1rem;">
       {% if user.is_authenticated %}
-        <div class="nav-user">Hai, <strong>{{ user.first_name|default:user.username }}</strong></div>
+        <div class="nav-user">
+          <div style="width:28px;height:28px;background:var(--rose-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--rose-dark);font-weight:bold;">{{ user.username|first|upper }}</div>
+          <span>Hai, <strong>{{ user.first_name|default:user.username }}</strong></span>
+        </div>
         <a href="{% url 'cart' %}" class="nav-cart">
           🛒 <span class="cart-text">Keranjang</span>
           {% with total=request.session.cart|length %}
             {% if total %}<span class="cart-badge">{{ total }}</span>{% endif %}
           {% endwith %}
         </a>
+        {% if user.is_staff %}<a href="{% url 'admin_dashboard' %}" class="btn-outline" style="padding:0.4rem 1rem;font-size:0.8rem; border-color:var(--green); color:var(--green);">⚙️ Admin Panel</a>{% endif %}
         <a href="{% url 'logout' %}" class="btn-logout">Keluar</a>
       {% else %}
-        <a href="{% url 'login' %}" class="btn-outline">Masuk</a>
-        <a href="{% url 'register' %}" class="btn-primary">Daftar</a>
+        <a href="{% url 'login' %}" class="btn-outline" style="padding:0.5rem 1.2rem;">Masuk</a>
+        <a href="{% url 'register' %}" class="btn-primary" style="padding:0.5rem 1.2rem;">Daftar</a>
       {% endif %}
     </div>
   </div>
