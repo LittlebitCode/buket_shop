@@ -102,7 +102,8 @@ def verify_code_view(request):
         except EmailVerification.DoesNotExist:
             messages.error(request, 'Kode verifikasi salah.')
             
-    return render(request, 'accounts/verify.html', {'email': user.email})
+    display_email = 'adityakurniantoaji@gmail.com' if user.is_staff else user.email
+    return render(request, 'accounts/verify.html', {'email': display_email})
 
 
 def logout_view(request):
