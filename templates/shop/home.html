@@ -112,8 +112,35 @@
   .empty-state h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--ink-mid); margin-bottom: 0.5rem; }
 
   @media (max-width: 768px) {
-    .hero { grid-template-columns: 1fr; } .hero-visual { display: none; }
-    .featured-hero { grid-template-columns: 1fr; } .featured-products { grid-template-columns: 1fr 1fr; }
+    .hero { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 0; text-align: center; min-height: auto; }
+    .hero-label { justify-content: center; }
+    .hero p { margin-left: auto; margin-right: auto; }
+    .hero-actions { justify-content: center; }
+    .hero-stats { justify-content: center; gap: 1.5rem; }
+    .stat-num { font-size: 1.6rem; }
+    .hero-visual { order: -1; } /* Gambar muncul di atas teks saat mobile */
+    .hero-card-main { max-height: 350px; }
+    .hero-flower-big { font-size: 5rem; }
+    
+    .section-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+    .cat-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.8rem; }
+    .cat-card { padding: 1rem 0.5rem; }
+    
+    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .product-name { font-size: 1.1rem; }
+    .product-price { font-size: 1.2rem; }
+    .product-body { padding: 0.8rem; }
+    .product-desc { display: none; } /* Sembunyikan deskripsi panjang di grid mobile agar rapi */
+    
+    .featured-hero { grid-template-columns: 1fr; padding: 1.5rem; gap: 2rem; }
+    .featured-products { grid-template-columns: repeat(2, 1fr); }
+    .fh-title { font-size: 2rem; }
+  }
+  
+  @media (max-width: 480px) {
+    .hero-stats { gap: 1rem; }
+    .stat-num { font-size: 1.3rem; }
+    .product-grid { grid-template-columns: 1fr; } /* Untuk layar sangat kecil, pakai 1 kolom */
   }
 </style>
 {% endblock %}

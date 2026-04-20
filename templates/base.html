@@ -73,17 +73,36 @@
   .tag-green { background: var(--green-light); color: var(--green); }
 
   @media (max-width: 768px) {
+    .nav-inner { padding: 0 1rem; height: 60px; }
+    .nav-logo { font-size: 1.5rem; }
     .nav-links { display: none; }
+    .nav-user { display: none; }
+    .btn-logout { display: none; }
+    .btn-outline, .btn-primary { padding: 0.4rem 0.8rem !important; font-size: 0.75rem !important; }
+    .nav-cart { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
+    .cart-text { display: none; }
     main { padding: 1rem; }
-    .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .footer-inner { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1rem; }
   }
+  
+  /* Mobile Menu Toggle */
+  .mobile-nav { display: none; background: var(--white); border-top: 1px solid var(--border); padding: 1rem; border-bottom: 1px solid var(--border); }
+  @media (max-width: 768px) {
+    .mobile-nav.active { display: block; }
+    .menu-toggle { display: block; font-size: 1.4rem; cursor: pointer; color: var(--ink); margin-right: 0.5rem; }
+  }
+  .menu-toggle { display: none; }
 </style>
 {% block extra_head %}{% endblock %}
 </head>
 <body>
 <nav>
   <div class="nav-inner">
-    <a href="{% url 'shop_home' %}" class="nav-logo">A&A Bouquet<span>.</span></a>
+    <div style="display:flex;align-items:center;">
+      <div class="menu-toggle" onclick="document.querySelector('.mobile-nav').classList.toggle('active')">☰</div>
+      <a href="{% url 'shop_home' %}" class="nav-logo">A&A Bouquet<span>.</span></a>
+    </div>
+    
     <div class="nav-links">
       <a href="{% url 'shop_home' %}">Beranda</a>
       <a href="{% url 'shop_home' %}?category=">Koleksi</a>
@@ -91,20 +110,34 @@
         <a href="{% url 'my_orders' %}">Pesanan Saya</a>
       {% endif %}
     </div>
-    <div style="display:flex;align-items:center;gap:1rem;">
+
+    <div style="display:flex;align-items:center;gap:0.5rem;">
       {% if user.is_authenticated %}
         <div class="nav-user">Hai, <strong>{{ user.first_name|default:user.username }}</strong></div>
         <a href="{% url 'cart' %}" class="nav-cart">
-          🛒 Keranjang
+          🛒 <span class="cart-text">Keranjang</span>
           {% with total=request.session.cart|length %}
             {% if total %}<span class="cart-badge">{{ total }}</span>{% endif %}
           {% endwith %}
         </a>
-        {% if user.is_staff %}<a href="{% url 'admin_dashboard' %}" class="btn-outline" style="padding:0.4rem 1rem;font-size:0.8rem;">Admin Panel</a>{% endif %}
         <a href="{% url 'logout' %}" class="btn-logout">Keluar</a>
       {% else %}
-        <a href="{% url 'login' %}" class="btn-outline" style="padding:0.5rem 1.2rem;">Masuk</a>
-        <a href="{% url 'register' %}" class="btn-primary" style="padding:0.5rem 1.2rem;">Daftar</a>
+        <a href="{% url 'login' %}" class="btn-outline">Masuk</a>
+        <a href="{% url 'register' %}" class="btn-primary">Daftar</a>
+      {% endif %}
+    </div>
+  </div>
+  
+  <!-- Mobile Menu Content -->
+  <div class="mobile-nav">
+    <div style="display:flex; flex-direction:column; gap:1rem;">
+      <a href="{% url 'shop_home' %}" style="font-size:0.95rem; color:var(--ink-mid); font-weight:500;">Beranda</a>
+      <a href="{% url 'shop_home' %}?category=" style="font-size:0.95rem; color:var(--ink-mid); font-weight:500;">Koleksi</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'my_orders' %}" style="font-size:0.95rem; color:var(--ink-mid); font-weight:500;">Pesanan Saya</a>
+        <div style="height:1px; background:var(--border); margin:0.5rem 0;"></div>
+        <div style="font-size:0.85rem; color:var(--ink-soft);">Login sebagai: <strong>{{ user.username }}</strong></div>
+        <a href="{% url 'logout' %}" style="font-size:0.85rem; color:var(--rose); font-weight:600;">Keluar dari Akun</a>
       {% endif %}
     </div>
   </div>
