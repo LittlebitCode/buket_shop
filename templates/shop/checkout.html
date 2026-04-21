@@ -10,7 +10,7 @@
   .form-group label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 0.4rem; }
   .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--ink); background: var(--cream); outline: none; transition: all 0.2s; resize: vertical; }
   .form-group input:focus, .form-group textarea:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(201,112,90,0.1); background: var(--white); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
 
   .order-summary { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 1.8rem; position: sticky; top: 88px; }
   .order-summary h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; margin-bottom: 1.5rem; }
@@ -24,6 +24,7 @@
   .total-row { display: flex; justify-content: space-between; font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--ink); margin: 1rem 0 1.5rem; }
 
   @media(max-width:900px) { .checkout-layout { grid-template-columns: 1fr; } }
+  @media(max-width:600px) { .form-row { grid-template-columns: 1fr; gap: 0; } }
 </style>
 {% endblock %}
 
