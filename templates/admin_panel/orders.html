@@ -71,12 +71,14 @@
           <td style="font-weight:600;font-family:'Cormorant Garamond',serif;font-size:1rem;">Rp {{ order.total_price|floatformat:0 }}</td>
           <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
           <td style="color:var(--ink-soft);font-size:0.8rem;">{{ order.created_at|date:"d M Y" }}<br>{{ order.created_at|date:"H:i" }}</td>
-          <td style="display:flex;gap:0.5rem;">
-            <a href="{% url 'admin_order_detail' order.pk %}" class="btn-sm" title="Lihat Detail">Detail →</a>
-            <form method="post" action="{% url 'admin_order_delete' order.pk %}" onsubmit="return confirm('Hapus pesanan ini secara permanen?')">
-              {% csrf_token %}
-              <button type="submit" class="btn-sm" style="background:#fff5f5;color:#c62828;border-color:#ffcdd2;" title="Hapus Pesanan">🗑️</button>
-            </form>
+          <td>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+              <a href="{% url 'admin_order_detail' order.pk %}" class="btn-sm" title="Lihat Detail">Detail →</a>
+              <form method="post" action="{% url 'admin_order_delete' order.pk %}" onsubmit="return confirm('Hapus pesanan ini secara permanen?')" style="margin:0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-sm" style="background:#fff5f5;color:#c62828;border-color:#ffcdd2;" title="Hapus Pesanan">🗑️</button>
+              </form>
+            </div>
           </td>
         </tr>
         {% empty %}
