@@ -10,7 +10,7 @@
   .filter-search input { width: 100%; padding: 0.7rem 1rem 0.7rem 2.5rem; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; background: var(--white); outline: none; transition: all 0.2s; }
   .filter-search input:focus { border-color: var(--rose); }
   .filter-search .icon { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--ink-soft); font-size: 0.9rem; }
-  .filter-tabs { display: flex; gap: 0.4rem; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 0.3rem; }
+  .filter-tabs { display: flex; gap: 0.4rem; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 0.3rem; max-width: 100%; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
   .filter-tab { padding: 0.4rem 0.9rem; border-radius: 7px; font-size: 0.8rem; color: var(--ink-soft); cursor: pointer; transition: all 0.2s; white-space: nowrap; text-decoration: none; }
   .filter-tab:hover { background: #f5f2ef; color: var(--ink); }
   .filter-tab.active { background: var(--ink); color: var(--white); }
