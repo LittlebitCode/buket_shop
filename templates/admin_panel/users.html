@@ -1,0 +1,88 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}Kelola User — Admin Panel{% endblock %}
+{% block page_title %}Kelola User{% endblock %}
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <form method="get" style="display: flex; gap: 0.5rem; flex: 1; max-width: 400px;">
+        <input type="text" name="search" value="{{ search }}" placeholder="Cari username, nama, atau email..." 
+               style="flex: 1; padding: 0.6rem 1rem; border-radius: 10px; border: 1px solid var(--border); font-size: 0.85rem;">
+        <button type="submit" class="btn-primary-sm">Cari</button>
+    </form>
+    <div style="font-size: 0.85rem; color: var(--ink-soft);">
+        Total: <strong>{{ users.count }}</strong> user terdaftar
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div style="padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.85rem; 
+                    {% if message.tags == 'success' %}background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7;{% else %}background: #ffebee; color: #c62828; border: 1px solid #ffcdd2;{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="data-card">
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Nama Lengkap</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Tgl Bergabung</th>
+                    <th>Pesanan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--rose-light); color: var(--rose-dark); 
+                                        display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.75rem;">
+                                {{ u.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: var(--ink);">{{ u.username }}</div>
+                                <div style="font-size: 0.7rem; color: var(--ink-soft);">ID: #{{ u.id }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ u.first_name|default:"-" }}</td>
+                    <td>{{ u.email|default:"-" }}</td>
+                    <td>
+                        {% if u.is_staff %}
+                            <span class="status-badge status-confirmed">Admin</span>
+                        {% else %}
+                            <span class="status-badge status-processing">Customer</span>
+                        {% endif %}
+                        {% if not u.is_active %}
+                            <span class="status-badge status-cancelled">Nonaktif</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 0.8rem;">{{ u.date_joined|date:"d M Y" }}</td>
+                    <td>
+                        <span style="font-weight: 600;">{{ u.order_count }}</span>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin_user_edit' u.pk %}" class="btn-sm">✏️ Edit</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem; color: var(--ink-soft);">
+                        Tidak ada user ditemukan.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

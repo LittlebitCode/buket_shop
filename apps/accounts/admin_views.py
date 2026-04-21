@@ -178,3 +178,52 @@ def admin_profile(request):
         return redirect('admin_profile')
         
     return render(request, 'admin_panel/profile.html', {'user': user})
+
+
+@staff_member_required(login_url='/auth/login/')
+def users_list(request):
+    search = request.GET.get('search', '')
+    users = User.objects.annotate(
+        order_count=Count('orders')
+    ).order_by('-date_joined')
+
+    if search:
+        users = users.filter(
+            Q(username__icontains=search) |
+            Q(email__icontains=search) |
+            Q(first_name__icontains=search)
+        )
+
+    context = {
+        'users': users,
+        'search': search,
+    }
+    return render(request, 'admin_panel/users.html', context)
+
+
+@staff_member_required(login_url='/auth/login/')
+def user_edit(request, pk):
+    user_to_edit = get_object_or_404(User, pk=pk)
+    
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        first_name = request.POST.get('first_name')
+        email = request.POST.get('email')
+        is_staff = request.POST.get('is_staff') == 'on'
+        is_active = request.POST.get('is_active') == 'on'
+        
+        if username != user_to_edit.username and User.objects.filter(username=username).exists():
+            messages.error(request, 'Username sudah digunakan!')
+            return redirect('admin_user_edit', pk=pk)
+
+        user_to_edit.username = username
+        user_to_edit.first_name = first_name
+        user_to_edit.email = email
+        user_to_edit.is_staff = is_staff
+        user_to_edit.is_active = is_active
+        user_to_edit.save()
+        
+        messages.success(request, f'Profil {user_to_edit.username} berhasil diperbarui!')
+        return redirect('admin_users')
+        
+    return render(request, 'admin_panel/user_edit.html', {'user_to_edit': user_to_edit})

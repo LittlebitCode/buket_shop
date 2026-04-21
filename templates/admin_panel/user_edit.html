@@ -1,0 +1,69 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}Edit User: {{ user_to_edit.username }} — Admin Panel{% endblock %}
+{% block page_title %}Edit Profil User{% endblock %}
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px;">
+    <div style="margin-bottom: 2rem;">
+        <a href="{% url 'admin_users' %}" style="font-size: 0.85rem; color: var(--rose); display: flex; align-items: center; gap: 0.4rem;">
+            ← Kembali ke Daftar User
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.85rem; 
+                        {% if message.tags == 'success' %}background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7;{% else %}background: #ffebee; color: #c62828; border: 1px solid #ffcdd2;{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="data-card" style="padding: 2rem;">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 0.6rem;">Username</label>
+                <input type="text" name="username" value="{{ user_to_edit.username }}" required
+                       style="width: 100%; padding: 0.8rem 1rem; border-radius: 10px; border: 1px solid var(--border); font-family: 'DM Sans', sans-serif;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 0.6rem;">Nama Lengkap</label>
+                <input type="text" name="first_name" value="{{ user_to_edit.first_name }}"
+                       style="width: 100%; padding: 0.8rem 1rem; border-radius: 10px; border: 1px solid var(--border); font-family: 'DM Sans', sans-serif;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 0.6rem;">Email</label>
+                <input type="email" name="email" value="{{ user_to_edit.email }}"
+                       style="width: 100%; padding: 0.8rem 1rem; border-radius: 10px; border: 1px solid var(--border); font-family: 'DM Sans', sans-serif;">
+            </div>
+
+            <div style="display: flex; gap: 2rem; margin-bottom: 2rem; padding: 1.5rem; background: #faf9f8; border-radius: 12px; border: 1px solid var(--border);">
+                <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer; font-size: 0.9rem; color: var(--ink-mid);">
+                    <input type="checkbox" name="is_staff" {% if user_to_edit.is_staff %}checked{% endif %} style="width: 18px; height: 18px; accent-color: var(--rose);">
+                    Jadikan Admin (Staff Status)
+                </label>
+                
+                <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer; font-size: 0.9rem; color: var(--ink-mid);">
+                    <input type="checkbox" name="is_active" {% if user_to_edit.is_active %}checked{% endif %} style="width: 18px; height: 18px; accent-color: var(--rose);">
+                    Akun Aktif
+                </label>
+            </div>
+
+            <button type="submit" class="btn-primary-sm" style="width: 100%; padding: 1rem; font-size: 0.9rem; font-weight: 600;">
+                Simpan Perubahan
+            </button>
+        </form>
+    </div>
+    
+    <div style="margin-top: 1.5rem; padding: 1.2rem; background: #fff8e1; border: 1px solid #ffe082; border-radius: 12px; font-size: 0.8rem; color: #795548;">
+        <strong>💡 Informasi:</strong> 
+        Memberikan status Admin (Staff) akan membuat user ini bisa mengakses Admin Panel ini. Pastikan Anda hanya memberikannya kepada orang yang terpercaya.
+    </div>
+</div>
+{% endblock %}

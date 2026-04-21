@@ -10,4 +10,6 @@ urlpatterns = [
     path('products/<int:pk>/toggle/', admin_views.product_toggle, name='admin_product_toggle'),
     path('orders/<int:pk>/delete/', admin_views.order_delete, name='admin_order_delete'),
     path('profile/', admin_views.admin_profile, name='admin_profile'),
+    path('users/', admin_views.users_list, name='admin_users'),
+    path('users/<int:pk>/edit/', admin_views.user_edit, name='admin_user_edit'),
 ]
