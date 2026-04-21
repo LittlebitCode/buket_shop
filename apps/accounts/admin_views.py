@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum, Count, Q
-from django.db.models.functions import TruncMonth, TruncDay
+from django.db.models.functions import TruncMonth, TruncDay, TruncDate
 from django.utils import timezone
 from django.http import JsonResponse
 from django.contrib import messages
@@ -28,20 +28,32 @@ def dashboard(request):
     recent_orders = Order.objects.select_related('user').order_by('-created_at')[:8]
 
     # Chart data - last 14 days
+    start_date = (today - timedelta(days=13)).date()
+    
+    # Query database directly instead of 28 separate queries
+    daily_stats = Order.objects.filter(
+        created_at__date__gte=start_date
+    ).annotate(
+        date=TruncDate('created_at')
+    ).values('date').annotate(
+        orders_count=Count('id'),
+        revenue=Sum('total_price', filter=Q(status='delivered'))
+    )
+    
+    stats_dict = {
+        item['date']: item
+        for item in daily_stats
+    }
+
     chart_data = []
     for i in range(13, -1, -1):
-        day = today - timedelta(days=i)
-        count = Order.objects.filter(
-            created_at__date=day.date()
-        ).count()
-        revenue = Order.objects.filter(
-            created_at__date=day.date(),
-            status='delivered'
-        ).aggregate(total=Sum('total_price'))['total'] or 0
+        day = (today - timedelta(days=i)).date()
+        day_stats = stats_dict.get(day, {'orders_count': 0, 'revenue': 0})
+        
         chart_data.append({
             'date': day.strftime('%d %b'),
-            'orders': count,
-            'revenue': float(revenue),
+            'orders': day_stats['orders_count'],
+            'revenue': float(day_stats['revenue'] or 0),
         })
 
     # Status breakdown

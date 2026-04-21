@@ -1,11 +1,15 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-buket-shop-change-this-in-production-2024'
+# Load environment variables from .env file if present
+load_dotenv(BASE_DIR / '.env')
 
-DEBUG = True
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default')
+
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = ['*', 'buketshop-production.up.railway.app', '.pythonanywhere.com']
 
@@ -105,7 +109,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'adityaahza0223@gmail.com'
-EMAIL_HOST_PASSWORD = 'uiawmlqtipbdfjhm' 
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'adityaahza0223@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '') 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
