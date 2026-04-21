@@ -85,6 +85,7 @@
     {% if product.stock > 0 %}
       {% if user.is_authenticated %}
         <div class="detail-actions">
+          <form action="{% url 'add_to_cart' product.id %}" method="post" class="ajax-cart-form" style="display:inline;">
             {% csrf_token %}
             <button type="submit" class="btn-primary">🛒 Tambah ke Keranjang</button>
           </form>
