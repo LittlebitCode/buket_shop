@@ -31,6 +31,12 @@
   .tl-action { font-size: 0.88rem; font-weight: 500; color: var(--ink); }
   .tl-desc { font-size: 0.78rem; color: var(--ink-soft); margin-top: 2px; }
   .tl-time { font-size: 0.72rem; color: var(--ink-soft); margin-top: 2px; }
+  
+  @media(max-width:768px) {
+    .detail-layout { grid-template-columns: 1fr; gap: 1rem; }
+    .detail-card { padding: 1.2rem; }
+    .page-title { font-size: 2rem; }
+  }
 </style>
 {% endblock %}
 {% block content %}
