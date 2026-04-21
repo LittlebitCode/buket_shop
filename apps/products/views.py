@@ -67,17 +67,20 @@ def add_to_cart(request, product_id):
     key = str(product_id)
     
     # Check if request is AJAX
-    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or \
+              request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
     
     if cart.get(key, 0) < product.stock:
         cart[key] = cart.get(key, 0) + 1
         request.session['cart'] = cart
+        request.session.modified = True
+        
         message = f'{product.name} ditambahkan ke keranjang!'
         if is_ajax:
             return JsonResponse({
                 'status': 'success',
                 'message': message,
-                'cart_count': len(cart)
+                'cart_count': sum(cart.values())
             })
         messages.success(request, message)
     else:

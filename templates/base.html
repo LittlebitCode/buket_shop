@@ -141,6 +141,8 @@
 <script>
   function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
+    if (!container) return;
+    
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     
@@ -179,16 +181,17 @@
           'X-CSRFToken': formData.get('csrfmiddlewaretoken')
         }
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === 'success') {
+      .then(async response => {
+        const isJson = response.headers.get('content-type')?.includes('application/json');
+        const data = isJson ? await response.json() : null;
+        
+        if (response.ok && data) {
           showToast(data.message, 'success');
           // Update cart badge
           const badge = document.querySelector('.cart-badge');
           if (badge) {
             badge.textContent = data.cart_count;
           } else {
-            // Create badge if it doesn't exist
             const cartLink = document.querySelector('.nav-cart');
             if (cartLink) {
               const newBadge = document.createElement('span');
@@ -198,12 +201,13 @@
             }
           }
         } else {
-          showToast(data.message, 'error');
+          const errMsg = data ? data.message : 'Terjadi kesalahan pada server.';
+          showToast(errMsg, 'error');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        showToast('Terjadi kesalahan saat menambahkan produk.', 'error');
+        showToast('Gagal terhubung ke server.', 'error');
       });
     }
   });
