@@ -32,6 +32,13 @@
   .tl-desc { font-size: 0.78rem; color: var(--ink-soft); margin-top: 1px; line-height: 1.5; }
   .tl-time { font-size: 0.7rem; color: var(--ink-soft); margin-top: 2px; }
   .tl-by { font-size: 0.7rem; color: var(--rose); }
+
+  @media(max-width:900px) {
+    .detail-layout { grid-template-columns: 1fr; }
+  }
+  @media(max-width:480px) {
+    .info-grid { grid-template-columns: 1fr; }
+  }
 </style>
 {% endblock %}
 
