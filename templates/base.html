@@ -43,8 +43,9 @@
 
   @media (max-width: 768px) {
     .nav-inner { height: 65px; padding: 0 1.2rem; }
-    .nav-links, .nav-actions .desktop-only { display: none; }
-    .menu-toggle { display: block; }
+    .nav-links, .nav-actions .desktop-only { display: none !important; }
+    .nav-actions { gap: 0.8rem; }
+    .menu-toggle { display: block; margin-left: 0.5rem; }
     .mobile-nav.active { display: block; }
     .nav-logo { font-size: 1.6rem; }
   }
