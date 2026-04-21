@@ -227,3 +227,21 @@ def user_edit(request, pk):
         return redirect('admin_users')
         
     return render(request, 'admin_panel/user_edit.html', {'user_to_edit': user_to_edit})
+
+
+@staff_member_required(login_url='/auth/login/')
+def user_delete(request, pk):
+    user_to_delete = get_object_or_404(User, pk=pk)
+    
+    # Prevent self-deletion
+    if user_to_delete == request.user:
+        messages.error(request, 'Anda tidak bisa menghapus akun Anda sendiri!')
+        return redirect('admin_users')
+        
+    if request.method == 'POST':
+        username = user_to_delete.username
+        user_to_delete.delete()
+        messages.success(request, f'User {username} berhasil dihapus.')
+        return redirect('admin_users')
+        
+    return redirect('admin_users')

@@ -71,7 +71,13 @@
                         <span style="font-weight: 600;">{{ u.order_count }}</span>
                     </td>
                     <td>
-                        <a href="{% url 'admin_user_edit' u.pk %}" class="btn-sm">✏️ Edit</a>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="{% url 'admin_user_edit' u.pk %}" class="btn-sm">✏️ Edit</a>
+                            <form action="{% url 'admin_user_delete' u.pk %}" method="post" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user {{ u.username }}? Tindakan ini tidak bisa dibatalkan.')" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-sm" style="color: #c62828; border-color: #ffcdd2;">🗑️ Hapus</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}
