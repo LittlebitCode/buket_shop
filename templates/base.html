@@ -60,10 +60,21 @@
 
   footer { background: var(--ink); color: var(--cream); padding: 4rem 2rem; margin-top: 5rem; text-align: center; }
   .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; margin-bottom: 1rem; color: var(--rose-light); }
+
+  /* TOAST */
+  #toast-container { position: fixed; top: 2rem; right: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.8rem; pointer-events: none; }
+  .toast { background: var(--white); color: var(--ink); padding: 1rem 1.5rem; border-radius: 14px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 0.8rem; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border-left: 4px solid var(--rose); min-width: 300px; }
+  .toast.show { transform: translateX(0); }
+  .toast.error { border-left-color: #e53935; }
+  .toast-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .toast.success .toast-icon { background: #e8f5e9; color: #2e7d32; }
+  .toast.error .toast-icon { background: #ffebee; color: #c62828; }
+  .toast-msg { font-size: 0.9rem; font-weight: 500; }
 </style>
 {% block extra_head %}{% endblock %}
 </head>
 <body>
+<div id="toast-container"></div>
 <nav>
   <div class="nav-inner">
     <a href="{% url 'shop_home' %}" class="nav-logo">A&A Bouquet<span>.</span></a>
@@ -126,5 +137,76 @@
   <p style="font-size:0.85rem; color:var(--ink-soft); max-width:400px; margin:0 auto;">Rangkaian bunga segar yang dibuat dengan penuh cinta untuk setiap momen istimewa Anda.</p>
   <div style="margin-top:2rem; font-size:0.8rem; color:var(--ink-soft);">© 2024 A&A Bouquet. Semua hak dilindungi.</div>
 </footer>
+
+<script>
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icon = type === 'success' ? '✅' : '❌';
+    
+    toast.innerHTML = `
+      <div class="toast-icon">${icon}</div>
+      <div class="toast-msg">${message}</div>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Trigger animation
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Remove after 4s
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 400);
+    }, 4000);
+  }
+
+  // Intercept Add to Cart forms
+  document.addEventListener('submit', function(e) {
+    if (e.target.classList.contains('ajax-cart-form')) {
+      e.preventDefault();
+      const form = e.target;
+      const url = form.action;
+      const formData = new FormData(form);
+
+      fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          showToast(data.message, 'success');
+          // Update cart badge
+          const badge = document.querySelector('.cart-badge');
+          if (badge) {
+            badge.textContent = data.cart_count;
+          } else {
+            // Create badge if it doesn't exist
+            const cartLink = document.querySelector('.nav-cart');
+            if (cartLink) {
+              const newBadge = document.createElement('span');
+              newBadge.className = 'cart-badge';
+              newBadge.textContent = data.cart_count;
+              cartLink.appendChild(newBadge);
+            }
+          }
+        } else {
+          showToast(data.message, 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showToast('Terjadi kesalahan saat menambahkan produk.', 'error');
+      });
+    }
+  });
+</script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Product, Category
@@ -64,12 +65,30 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, pk=product_id, is_available=True)
     cart = request.session.get('cart', {})
     key = str(product_id)
+    
+    # Check if request is AJAX
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+    
     if cart.get(key, 0) < product.stock:
         cart[key] = cart.get(key, 0) + 1
         request.session['cart'] = cart
-        messages.success(request, f'{product.name} ditambahkan ke keranjang!')
+        message = f'{product.name} ditambahkan ke keranjang!'
+        if is_ajax:
+            return JsonResponse({
+                'status': 'success',
+                'message': message,
+                'cart_count': len(cart)
+            })
+        messages.success(request, message)
     else:
-        messages.error(request, f'Maaf, stok {product.name} tidak mencukupi.')
+        message = f'Maaf, stok {product.name} tidak mencukupi.'
+        if is_ajax:
+            return JsonResponse({
+                'status': 'error',
+                'message': message
+            }, status=400)
+        messages.error(request, message)
+        
     return redirect(request.META.get('HTTP_REFERER', 'shop_home'))
 
 

@@ -294,7 +294,6 @@
         <div class="product-footer">
           <div class="product-price">{{ product.formatted_price }}</div>
           {% if user.is_authenticated %}
-            <form method="post" action="{% url 'add_to_cart' product.id %}">
               {% csrf_token %}
               <button type="submit" class="btn-add" title="Tambah ke keranjang">+</button>
             </form>
