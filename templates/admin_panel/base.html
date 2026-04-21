@@ -111,8 +111,14 @@
     .topbar { padding: 0 1rem; }
     .topbar-date { display: none; }
     .menu-toggle-admin { display: block !important; font-size: 1.5rem; cursor: pointer; color: var(--ink); margin-right: 1rem; }
+    .page-content { padding: 1rem; }
+  }
+  @media(max-width:480px) {
+    .stat-grid { grid-template-columns: 1fr; }
   }
   .menu-toggle-admin { display: none; }
+  
+  .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   
   /* OVERLAY */
   .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 45; }

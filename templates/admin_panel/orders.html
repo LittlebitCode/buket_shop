@@ -41,47 +41,49 @@
     <h3>Daftar Pesanan</h3>
     <span class="order-count">{{ orders|length }} pesanan</span>
   </div>
-  <table>
-    <thead>
-      <tr>
-        <th>No. Pesanan</th>
-        <th>Pelanggan</th>
-        <th>Penerima</th>
-        <th>Produk</th>
-        <th>Total</th>
-        <th>Status</th>
-        <th>Tanggal</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for order in orders %}
-      <tr>
-        <td><strong style="color:var(--rose);font-family:'Cormorant Garamond',serif;font-size:1rem;">#{{ order.order_number }}</strong></td>
-        <td>
-          <div style="font-weight:500;font-size:0.88rem;">{{ order.user.get_full_name|default:order.user.username }}</div>
-          <div style="font-size:0.75rem;color:var(--ink-soft);">@{{ order.user.username }}</div>
-        </td>
-        <td>{{ order.recipient_name }}</td>
-        <td style="color:var(--ink-soft);font-size:0.82rem;">
-          {% for item in order.items.all|slice:":2" %}{{ item.product_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-          {% if order.items.count > 2 %}<span style="color:var(--rose);">+{{ order.items.count|add:"-2" }}</span>{% endif %}
-        </td>
-        <td style="font-weight:600;font-family:'Cormorant Garamond',serif;font-size:1rem;">Rp {{ order.total_price|floatformat:0 }}</td>
-        <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
-        <td style="color:var(--ink-soft);font-size:0.8rem;">{{ order.created_at|date:"d M Y" }}<br>{{ order.created_at|date:"H:i" }}</td>
-        <td style="display:flex;gap:0.5rem;">
-          <a href="{% url 'admin_order_detail' order.pk %}" class="btn-sm" title="Lihat Detail">Detail →</a>
-          <form method="post" action="{% url 'admin_order_delete' order.pk %}" onsubmit="return confirm('Hapus pesanan ini secara permanen?')">
-            {% csrf_token %}
-            <button type="submit" class="btn-sm" style="background:#fff5f5;color:#c62828;border-color:#ffcdd2;" title="Hapus Pesanan">🗑️</button>
-          </form>
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="8" style="text-align:center;color:var(--ink-soft);padding:3rem;">Tidak ada pesanan ditemukan</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>No. Pesanan</th>
+          <th>Pelanggan</th>
+          <th>Penerima</th>
+          <th>Produk</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Tanggal</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td><strong style="color:var(--rose);font-family:'Cormorant Garamond',serif;font-size:1rem;">#{{ order.order_number }}</strong></td>
+          <td>
+            <div style="font-weight:500;font-size:0.88rem;">{{ order.user.get_full_name|default:order.user.username }}</div>
+            <div style="font-size:0.75rem;color:var(--ink-soft);">@{{ order.user.username }}</div>
+          </td>
+          <td>{{ order.recipient_name }}</td>
+          <td style="color:var(--ink-soft);font-size:0.82rem;">
+            {% for item in order.items.all|slice:":2" %}{{ item.product_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            {% if order.items.count > 2 %}<span style="color:var(--rose);">+{{ order.items.count|add:"-2" }}</span>{% endif %}
+          </td>
+          <td style="font-weight:600;font-family:'Cormorant Garamond',serif;font-size:1rem;">Rp {{ order.total_price|floatformat:0 }}</td>
+          <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+          <td style="color:var(--ink-soft);font-size:0.8rem;">{{ order.created_at|date:"d M Y" }}<br>{{ order.created_at|date:"H:i" }}</td>
+          <td style="display:flex;gap:0.5rem;">
+            <a href="{% url 'admin_order_detail' order.pk %}" class="btn-sm" title="Lihat Detail">Detail →</a>
+            <form method="post" action="{% url 'admin_order_delete' order.pk %}" onsubmit="return confirm('Hapus pesanan ini secara permanen?')">
+              {% csrf_token %}
+              <button type="submit" class="btn-sm" style="background:#fff5f5;color:#c62828;border-color:#ffcdd2;" title="Hapus Pesanan">🗑️</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" style="text-align:center;color:var(--ink-soft);padding:3rem;">Tidak ada pesanan ditemukan</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

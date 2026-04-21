@@ -26,6 +26,13 @@
   .page-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 400; color: var(--ink); }
   .count-badge { font-size: 0.78rem; background: var(--cream); color: var(--ink-soft); padding: 0.35rem 0.9rem; border-radius: 20px; border: 1px solid var(--border); }
   .col-header { display: grid; grid-template-columns: 120px 1fr 160px 120px; gap: 1rem; padding: 0.6rem 1.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); background: #faf9f8; border: 1px solid var(--border); border-bottom: none; border-radius: 16px 16px 0 0; font-weight: 500; }
+  @media(max-width:768px) {
+    .col-header { display: none; }
+    .log-entry { grid-template-columns: 1fr; gap: 0.5rem; padding: 1rem; }
+    .log-time { font-size: 0.8rem; display: flex; gap: 0.5rem; align-items: center; }
+    .log-time br { display: none; }
+    .log-action { margin-top: 0.5rem; font-size: 0.95rem; }
+  }
 </style>
 {% endblock %}
 

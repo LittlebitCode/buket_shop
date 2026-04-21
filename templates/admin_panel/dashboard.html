@@ -17,6 +17,9 @@
   .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .legend-label { color: var(--ink-mid); flex: 1; margin-left: 0.6rem; }
   .legend-val { font-weight: 500; color: var(--ink); }
+  @media(max-width:900px) {
+    .charts-grid { grid-template-columns: 1fr; }
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 {% endblock %}
@@ -73,34 +76,36 @@
     <h3>Pesanan Terbaru</h3>
     <a href="{% url 'admin_orders' %}" class="btn-sm">Lihat Semua →</a>
   </div>
-  <table>
-    <thead>
-      <tr>
-        <th>No. Pesanan</th>
-        <th>Pelanggan</th>
-        <th>Penerima</th>
-        <th>Total</th>
-        <th>Status</th>
-        <th>Tanggal</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for order in recent_orders %}
-      <tr>
-        <td><strong style="color:var(--rose);">#{{ order.order_number }}</strong></td>
-        <td>{{ order.user.get_full_name|default:order.user.username }}</td>
-        <td>{{ order.recipient_name }}</td>
-        <td style="font-weight:500;">Rp {{ order.total_price|floatformat:0 }}</td>
-        <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
-        <td style="color:var(--ink-soft);">{{ order.created_at|date:"d M, H:i" }}</td>
-        <td><a href="{% url 'admin_order_detail' order.pk %}" class="btn-sm">Detail</a></td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="7" style="text-align:center;color:var(--ink-soft);padding:3rem;">Belum ada pesanan</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>No. Pesanan</th>
+          <th>Pelanggan</th>
+          <th>Penerima</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Tanggal</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in recent_orders %}
+        <tr>
+          <td><strong style="color:var(--rose);">#{{ order.order_number }}</strong></td>
+          <td>{{ order.user.get_full_name|default:order.user.username }}</td>
+          <td>{{ order.recipient_name }}</td>
+          <td style="font-weight:500;">Rp {{ order.total_price|floatformat:0 }}</td>
+          <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+          <td style="color:var(--ink-soft);">{{ order.created_at|date:"d M, H:i" }}</td>
+          <td><a href="{% url 'admin_order_detail' order.pk %}" class="btn-sm">Detail</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;color:var(--ink-soft);padding:3rem;">Belum ada pesanan</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script>
