@@ -138,6 +138,7 @@
   <div style="margin-top:2rem; font-size:0.8rem; color:var(--ink-soft);">© 2024 A&A Bouquet. Semua hak dilindungi.</div>
 </footer>
 
+
 <script>
   function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
@@ -155,19 +156,16 @@
     
     container.appendChild(toast);
     
-    // Trigger animation
     setTimeout(() => toast.classList.add('show'), 10);
     
-    // Remove after 4s
     setTimeout(() => {
       toast.classList.remove('show');
       setTimeout(() => toast.remove(), 400);
     }, 4000);
   }
 
-  // Intercept Add to Cart forms
   document.addEventListener('submit', function(e) {
-    if (e.target.classList.contains('ajax-cart-form')) {
+    if (e.target.classList && e.target.classList.contains('ajax-cart-form')) {
       e.preventDefault();
       const form = e.target;
       const url = form.action;
@@ -176,38 +174,47 @@
       fetch(url, {
         method: 'POST',
         body: formData,
+        credentials: 'same-origin',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+          'X-CSRFToken': formData.get('csrfmiddlewaretoken') || ''
         }
       })
-      .then(async response => {
-        const isJson = response.headers.get('content-type')?.includes('application/json');
-        const data = isJson ? await response.json() : null;
+      .then(function(response) {
+        const contentType = response.headers.get('content-type');
+        const isJson = contentType && contentType.includes('application/json');
         
-        if (response.ok && data) {
-          showToast(data.message, 'success');
-          // Update cart badge
+        if (isJson) {
+          return response.json().then(function(data) {
+            return { ok: response.ok, data: data };
+          });
+        } else {
+          return { ok: false, data: null };
+        }
+      })
+      .then(function(result) {
+        if (result.ok && result.data) {
+          showToast(result.data.message, 'success');
           const badge = document.querySelector('.cart-badge');
           if (badge) {
-            badge.textContent = data.cart_count;
+            badge.textContent = result.data.cart_count;
           } else {
             const cartLink = document.querySelector('.nav-cart');
             if (cartLink) {
               const newBadge = document.createElement('span');
               newBadge.className = 'cart-badge';
-              newBadge.textContent = data.cart_count;
+              newBadge.textContent = result.data.cart_count;
               cartLink.appendChild(newBadge);
             }
           }
         } else {
-          const errMsg = data ? data.message : 'Terjadi kesalahan pada server.';
+          const errMsg = (result.data && result.data.message) ? result.data.message : 'Silakan masuk/login terlebih dahulu atau refresh halaman.';
           showToast(errMsg, 'error');
         }
       })
-      .catch(error => {
+      .catch(function(error) {
         console.error('Error:', error);
-        showToast('Gagal terhubung ke server.', 'error');
+        showToast('Gagal terhubung ke server. Periksa koneksi internet Anda.', 'error');
       });
     }
   });
